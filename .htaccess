@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteBase /rafinerikayit/
+
+# Rewrite rule for removing index.php
+RewriteCond %{REQUEST_URI} ^(.*)/index.php/$
+RewriteRule ^(.*)/index.php/$ /$1 [R=301,L]
+
+# Remove the 'index.php' from the URL
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
+SetEnv CI_ENVIRONMENT development
+
+

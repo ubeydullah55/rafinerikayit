@@ -1,0 +1,305 @@
+ERROR - 2025-04-26 09:43:57 --> Error connecting to the database: mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php:201
+Stack trace:
+#0 C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', '', Object(SensitiveParameterValue), '', 3306, '', 0)
+#1 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(421): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(620): CodeIgniter\Database\BaseConnection->initialize()
+#3 C:\xampp\htdocs\gercekkisi\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#4 C:\xampp\htdocs\gercekkisi\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\gercekkisi\system\BaseModel.php(839): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\gercekkisi\system\Model.php(800): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\gercekkisi\app\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+#9 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+#10 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\gercekkisi\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\gercekkisi\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\gercekkisi\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user ''@'localhost' (using password: NO) in C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php:246
+Stack trace:
+#0 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(421): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(620): CodeIgniter\Database\BaseConnection->initialize()
+#2 C:\xampp\htdocs\gercekkisi\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#3 C:\xampp\htdocs\gercekkisi\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#4 C:\xampp\htdocs\gercekkisi\system\BaseModel.php(839): CodeIgniter\Model->doInsert(Array)
+#5 C:\xampp\htdocs\gercekkisi\system\Model.php(800): CodeIgniter\BaseModel->insert(Array, true)
+#6 C:\xampp\htdocs\gercekkisi\app\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert(Array)
+#7 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+#8 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+#9 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\gercekkisi\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\gercekkisi\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp\htdocs\gercekkisi\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 {main}
+CRITICAL - 2025-04-26 09:43:57 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Access denied for user ''@'localhost' (using password: NO)
+[Method: POST, Route: savecustomer]
+in SYSTEMPATH\Database\BaseConnection.php on line 467.
+ 1 SYSTEMPATH\Database\BaseConnection.php(620): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 3 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 4 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 5 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 6 APPPATH\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert([...])
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 10:02:00 --> ErrorException: Undefined array key "ilce"
+[Method: GET, Route: homepage]
+in APPPATH\Views\homepage.php on line 86.
+ 1 APPPATH\Views\homepage.php(86): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "ilce"', 'C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\homepage.php', 86)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\homepage.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('homepage', [], true)
+ 5 APPPATH\Controllers\Home.php(16): view('homepage', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Home->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2025-04-26 11:07:39 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 11:09:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-04-26 11:11:15 --> ErrorException: Undefined array key "ad_soyad"
+[Method: GET, Route: homepage]
+in APPPATH\Views\homepage.php on line 96.
+ 1 APPPATH\Views\homepage.php(96): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "ad_soyad"', 'C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\homepage.php', 96)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\homepage.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('homepage', [], true)
+ 5 APPPATH\Controllers\Home.php(16): view('homepage', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Home->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 11:31:12 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "customer/edit.php"
+[Method: GET, Route: customerview/2]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('customer/edit.php')
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('customer/edit', [], true)
+ 3 APPPATH\Controllers\AddCustomerController.php(96): view('customer/edit', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->customerview('2')
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 11:32:13 --> ErrorException: Undefined array key "onyuz_resim"
+[Method: GET, Route: customerview/2]
+in APPPATH\Views\viewcustomer.php on line 22.
+ 1 APPPATH\Views\viewcustomer.php(22): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "onyuz_resim"', 'C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php', 22)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('viewcustomer', [], true)
+ 5 APPPATH\Controllers\AddCustomerController.php(96): view('viewcustomer', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->customerview('2')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 11:33:00 --> ErrorException: Undefined array key "belge_turu"
+[Method: GET, Route: customerview/2]
+in APPPATH\Views\viewcustomer.php on line 97.
+ 1 APPPATH\Views\viewcustomer.php(97): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "belge_turu"', 'C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php', 97)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('viewcustomer', [], true)
+ 5 APPPATH\Controllers\AddCustomerController.php(96): view('viewcustomer', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->customerview('2')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 11:33:42 --> ErrorException: Undefined array key "eposta"
+[Method: GET, Route: customerview/2]
+in APPPATH\Views\viewcustomer.php on line 109.
+ 1 APPPATH\Views\viewcustomer.php(109): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "eposta"', 'C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php', 109)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('viewcustomer', [], true)
+ 5 APPPATH\Controllers\AddCustomerController.php(96): view('viewcustomer', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->customerview('2')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 11:33:49 --> ErrorException: Undefined array key "not"
+[Method: GET, Route: customerview/2]
+in APPPATH\Views\viewcustomer.php on line 145.
+ 1 APPPATH\Views\viewcustomer.php(145): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "not"', 'C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php', 145)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\gercekkisi\\app\\Views\\viewcustomer.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('viewcustomer', [], true)
+ 5 APPPATH\Controllers\AddCustomerController.php(96): view('viewcustomer', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->customerview('2')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 11:35:12 --> ParseError: syntax error, unexpected token "."
+[Method: GET, Route: customerview/2]
+in APPPATH\Views\viewcustomer.php on line 34.
+ 1 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('viewcustomer', [], true)
+ 3 APPPATH\Controllers\AddCustomerController.php(96): view('viewcustomer', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->customerview('2')
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-04-26 12:07:26 --> mysqli_sql_exception: Column 'img_1' cannot be null in C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `cu...', 0)
+#1 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cu...')
+#2 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cu...')
+#3 C:\xampp\htdocs\gercekkisi\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#4 C:\xampp\htdocs\gercekkisi\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\gercekkisi\system\BaseModel.php(839): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\gercekkisi\system\Model.php(800): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\gercekkisi\app\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+#9 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+#10 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\gercekkisi\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\gercekkisi\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\gercekkisi\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-04-26 12:07:26 --> CodeIgniter\Database\Exceptions\DatabaseException: Column 'img_1' cannot be null
+[Method: POST, Route: savecustomer]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 2 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 3 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 4 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 5 APPPATH\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert([...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 12:07:26 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Column 'img_1' cannot be null
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'DENEME55\', \'DASD\', \'12312312312\', \'2025-04-13\', \'ASDASD\', \'ASDA\', \'ASDA\', \'T.C\', \'T.C\', \'123123\', \'asdada@hotmail.com\', \'123123\', \'ADA\', \'AASDA\', \'ASD\', \'asda\', NULL, NULL)')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'DENEME55\', \'DASD\', \'12312312312\', \'2025-04-13\', \'ASDASD\', \'ASDA\', \'ASDA\', \'T.C\', \'T.C\', \'123123\', \'asdada@hotmail.com\', \'123123\', \'ADA\', \'AASDA\', \'ASD\', \'asda\', NULL, NULL)')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 4 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 5 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 6 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 7 APPPATH\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert([...])
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 12:07:26 --> [Caused by] mysqli_sql_exception: Column 'img_1' cannot be null
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'DENEME55\', \'DASD\', \'12312312312\', \'2025-04-13\', \'ASDASD\', \'ASDA\', \'ASDA\', \'T.C\', \'T.C\', \'123123\', \'asdada@hotmail.com\', \'123123\', \'ADA\', \'AASDA\', \'ASD\', \'asda\', NULL, NULL)', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'DENEME55\', \'DASD\', \'12312312312\', \'2025-04-13\', \'ASDASD\', \'ASDA\', \'ASDA\', \'T.C\', \'T.C\', \'123123\', \'asdada@hotmail.com\', \'123123\', \'ADA\', \'AASDA\', \'ASD\', \'asda\', NULL, NULL)')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'DENEME55\', \'DASD\', \'12312312312\', \'2025-04-13\', \'ASDASD\', \'ASDA\', \'ASDA\', \'T.C\', \'T.C\', \'123123\', \'asdada@hotmail.com\', \'123123\', \'ADA\', \'AASDA\', \'ASD\', \'asda\', NULL, NULL)')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 5 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Controllers\AddCustomerController.php(70): CodeIgniter\Model->insert([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2025-04-26 12:42:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:42:32 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:42:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:42:50 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:43:35 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:43:38 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:44:06 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:44:10 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:44:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:44:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:45:01 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:45:06 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:45:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:46:57 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:47:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:47:13 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2025-04-26 12:50:17 --> mysqli_sql_exception: Column 'img_1' cannot be null in C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\gercekkisi\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `cu...', 0)
+#1 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cu...')
+#2 C:\xampp\htdocs\gercekkisi\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cu...')
+#3 C:\xampp\htdocs\gercekkisi\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#4 C:\xampp\htdocs\gercekkisi\system\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+#5 C:\xampp\htdocs\gercekkisi\system\BaseModel.php(839): CodeIgniter\Model->doInsert(Array)
+#6 C:\xampp\htdocs\gercekkisi\system\Model.php(800): CodeIgniter\BaseModel->insert(Array, true)
+#7 C:\xampp\htdocs\gercekkisi\app\Controllers\AddCustomerController.php(57): CodeIgniter\Model->insert(Array)
+#8 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+#9 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+#10 C:\xampp\htdocs\gercekkisi\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\gercekkisi\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\gercekkisi\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\gercekkisi\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-04-26 12:50:17 --> CodeIgniter\Database\Exceptions\DatabaseException: Column 'img_1' cannot be null
+[Method: POST, Route: savecustomer]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 2 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 3 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 4 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 5 APPPATH\Controllers\AddCustomerController.php(57): CodeIgniter\Model->insert([...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 12:50:17 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Column 'img_1' cannot be null
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'RESIMSIZ\', \'ASD\', \'123123123\', \'2025-04-04\', \'ASD\', \'ASD\', \'\', \'T.C\', \'T.C\', \'\', \'\', \'\', \'\', \'\', \'\', \'asdasd\', NULL, NULL)')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'RESIMSIZ\', \'ASD\', \'123123123\', \'2025-04-04\', \'ASD\', \'ASD\', \'\', \'T.C\', \'T.C\', \'\', \'\', \'\', \'\', \'\', \'\', \'asdasd\', NULL, NULL)')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 4 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 5 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 6 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 7 APPPATH\Controllers\AddCustomerController.php(57): CodeIgniter\Model->insert([...])
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-04-26 12:50:17 --> [Caused by] mysqli_sql_exception: Column 'img_1' cannot be null
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'RESIMSIZ\', \'ASD\', \'123123123\', \'2025-04-04\', \'ASD\', \'ASD\', \'\', \'T.C\', \'T.C\', \'\', \'\', \'\', \'\', \'\', \'\', \'asdasd\', NULL, NULL)', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'RESIMSIZ\', \'ASD\', \'123123123\', \'2025-04-04\', \'ASD\', \'ASD\', \'\', \'T.C\', \'T.C\', \'\', \'\', \'\', \'\', \'\', \'\', \'asdasd\', NULL, NULL)')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (\'RESIMSIZ\', \'ASD\', \'123123123\', \'2025-04-04\', \'ASD\', \'ASD\', \'\', \'T.C\', \'T.C\', \'\', \'\', \'\', \'\', \'\', \'\', \'asdasd\', NULL, NULL)')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `customer` (`ad`, `soyad`, `tc`, `dogum_tarihi`, `dogum_yeri`, `anne_adi`, `baba_adi`, `uyruk`, `kimlik_belgesi_turu`, `kimlik_belgesi_numarası`, `e_posta`, `tel`, `meslek`, `sehir`, `adres`, `musteri_notu`, `img_1`, `img_2`) VALUES (:ad:, :soyad:, :tc:, :dogum_tarihi:, :dogum_yeri:, :anne_adi:, :baba_adi:, :uyruk:, :kimlik_belgesi_turu:, :kimlik_belgesi_numarası:, :e_posta:, :tel:, :meslek:, :sehir:, :adres:, :musteri_notu:, :img_1:, :img_2:)', [...], false)
+ 5 SYSTEMPATH\Model.php(394): CodeIgniter\Database\BaseBuilder->insert()
+ 6 SYSTEMPATH\BaseModel.php(839): CodeIgniter\Model->doInsert([...])
+ 7 SYSTEMPATH\Model.php(800): CodeIgniter\BaseModel->insert([...], true)
+ 8 APPPATH\Controllers\AddCustomerController.php(57): CodeIgniter\Model->insert([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\AddCustomerController->savecustomer()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\AddCustomerController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(56): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+DEBUG - 2025-04-26 12:51:33 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:55:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 12:55:49 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 14:44:27 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-04-26 14:53:00 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
