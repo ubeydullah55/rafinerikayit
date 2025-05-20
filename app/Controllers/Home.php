@@ -46,17 +46,89 @@ class Home extends BaseController
 
         // status_code = 1 olan cesnilerle takozları joinleyelim
         $builder = $db->table('cesni');
-        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem,takozlar.olculen_milyem');
+        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem,takozlar.olculen_milyem,takozlar.cesni_has');
         $builder->join('takozlar', 'cesni.fis_no = takozlar.id');
         $builder->where('cesni.status_code', 1);
 
         $cesnibilgi = $builder->get()->getResultArray();
 
         // Gram toplamlarını hesapla
-        $totalGram = array_sum(array_column($items, 'giris_gram'));
-        $totalCesniGram = array_sum(array_column($cesnibilgi, 'agirlik'));
+        $totalGram = 0;
+
+        foreach ($items as $item) {
+            if ($item['islem_goren_miktar'] > 0) {
+                $totalGram += $item['islem_goren_miktar'];
+            } else {
+                $totalGram += $item['giris_gram'];
+            }
+        }
+
+
+        $totalCesniGram = 0;
+
+        foreach ($cesnibilgi as $item) {
+            if ($item['cesni_has'] > 0) {
+                $totalCesniGram += $item['cesni_has'];
+            } else {
+                $totalCesniGram += $item['agirlik'];
+            }
+        }
+
+
 
         return view('ayarevi', [
+            'items' => $items,
+            'totalGram' => $totalGram,
+            'role' => session()->get('role'),
+            'cesnibilgi' => $cesnibilgi,
+            'totalCesni' => $totalCesniGram,
+        ]);
+    }
+
+
+
+     public function eritme()
+    {
+        $model = new TakozModel();
+        $modelcesni = new CesniModel();
+        $db = \Config\Database::connect();
+
+        // status_code = 2 olan takozları al
+        $items = $model->where('status_code', 3)->findAll();
+
+        // status_code = 1 olan cesnilerle takozları joinleyelim
+        $builder = $db->table('cesni');
+        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem,takozlar.olculen_milyem,takozlar.cesni_has');
+        $builder->join('takozlar', 'cesni.fis_no = takozlar.id');
+        $builder->where('cesni.status_code', 1);
+
+        $cesnibilgi = $builder->get()->getResultArray();
+
+        // Gram toplamlarını hesapla
+        $totalGram = 0;
+
+        foreach ($items as $item) {
+            if ($item['islem_goren_miktar'] > 0) {
+                $totalGram += $item['islem_goren_miktar'];
+            } else {
+                $totalGram += $item['giris_gram'];
+            }
+        }
+
+
+        $totalCesniGram = 0;
+
+        foreach ($cesnibilgi as $item) {
+            if ($item['cesni_has'] > 0) {
+                $totalCesniGram += $item['cesni_has'];
+            } else {
+                $totalCesniGram += $item['agirlik'];
+            }
+        }
+
+
+
+        return view('eritme', [
             'items' => $items,
             'totalGram' => $totalGram,
             'role' => session()->get('role'),
@@ -110,41 +182,40 @@ class Home extends BaseController
 
 
 
-  public function kalancesniEkle()
-{
-    if ($this->request->isAJAX()) {
-        $input = $this->request->getJSON(true);
+    public function kalancesniEkle()
+    {
+        if ($this->request->isAJAX()) {
+            $input = $this->request->getJSON(true);
 
-        $id = $input['id']; // takoz ID
-        $kalanHasCesni = floatval($input['cesni_gram']);
+            $id = $input['id']; // takoz ID
+            $kalanHasCesni = floatval($input['cesni_gram']);
 
-        $model = new \App\Models\TakozModel();
-        $record = $model->find($id);
+            $model = new \App\Models\TakozModel();
+            $record = $model->find($id);
 
-        if (!$record) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Kayıt bulunamadı']);
+            if (!$record) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Kayıt bulunamadı']);
+            }
+
+            // Mevcut verileri çek
+            $mevcutCesniGram = $record['cesni_gram']; // dokunulmayacak
+
+
+            // Yeni değerleri hesapla
+
+
+            $olculenMilyem = ($kalanHasCesni / $mevcutCesniGram) * 1000;
+            // Güncelleme yap
+            $updateSuccess = $model->update($id, [
+                'cesni_has' => $kalanHasCesni,
+                'olculen_milyem' => $olculenMilyem
+            ]);
+
+            return $this->response->setJSON(['success' => $updateSuccess]);
         }
 
-        // Mevcut verileri çek
-        $mevcutCesniGram = $record['cesni_gram']; // dokunulmayacak
-        
-
-        // Yeni değerleri hesapla
-       
-        
-$olculenMilyem = ($kalanHasCesni / $mevcutCesniGram) * 1000;
-        // Güncelleme yap
-        $updateSuccess = $model->update($id, [
-            'cesni_has' => $kalanHasCesni,
-            'olculen_milyem' => $olculenMilyem
-        ]);
-
-        return $this->response->setJSON(['success' => $updateSuccess]);
+        return $this->response->setJSON(['success' => false]);
     }
-
-    return $this->response->setJSON(['success' => false]);
-}
-
 
 
     public function ilerletAjax($id)
@@ -152,11 +223,26 @@ $olculenMilyem = ($kalanHasCesni / $mevcutCesniGram) * 1000;
         if ($this->request->isAJAX()) {
             $model = new \App\Models\TakozModel();
 
-            $updated = $model->update($id, ['status_code' => 2]);
+            // Önce mevcut kaydı al
+            $current = $model->find($id);
 
-            return $this->response->setJSON([
-                'success' => $updated ? true : false
-            ]);
+            if ($current) {
+                // Mevcut status_code'yi bir artır
+                $newStatus = $current['status_code'] + 1;
+
+                // Güncelle
+                $updated = $model->update($id, ['status_code' => $newStatus]);
+
+                return $this->response->setJSON([
+                    'success' => $updated ? true : false,
+                    'new_status_code' => $newStatus
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Kayıt bulunamadı'
+                ]);
+            }
         }
 
         return $this->response->setJSON([
@@ -164,6 +250,48 @@ $olculenMilyem = ($kalanHasCesni / $mevcutCesniGram) * 1000;
             'error' => 'AJAX değil'
         ]);
     }
+
+
+
+public function uretTakoz()
+{
+    if ($this->request->isAJAX()) {
+        $data = $this->request->getJSON(true);
+
+        $ids = $data['ids'];
+        $takozlar = $data['takozlar'];
+
+        $hasTakozModel = new \App\Models\HasTakozModel();
+        $takozModel = new \App\Models\TakozModel();
+
+        // Veritabanındaki en büyük grup_kodu'nu al
+        $sonGrupKodu = (int) $hasTakozModel->selectMax('grup_kodu')->first()['grup_kodu'] ?? 0;
+        $groupCode = $sonGrupKodu + 1;
+
+        // Her takoz için yeni kayıt
+        foreach ($takozlar as $t) {
+            $hasTakozModel->insert([
+                'agirlik' => $t['agirlik'],
+                'milyem' => $t['milyem'],
+                'grup_kodu' => $groupCode
+            ]);
+        }
+
+        // Seçilen id'lerin grup kodunu güncelle
+         foreach ($ids as $id) {
+            $takozModel->update($id, [
+                'grup_kodu' => $groupCode,
+                'status_code' => 4
+            ]);
+        }
+
+        return $this->response->setJSON(['success' => true]);
+    }
+
+    return $this->response->setJSON(['success' => false, 'error' => 'AJAX değil']);
+}
+
+
 
 
 

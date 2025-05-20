@@ -20,11 +20,13 @@
 					<div class="col-md-6 col-sm-12">
 						<div class="title">
 							<h4>Rafineri Takoz Listesi</h4>
-							<button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('home'); ?>'">Mal Kabul</button>
-							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
-	Ayar Evi
-</button>
-							<button type="submit" class="btn btn-success">Eritme</button>
+							  <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
+                                Ayar Evi
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
+                                İfraz
+                            </button>
 						</div>
 						<nav aria-label="breadcrumb" role="navigation">
 							<ol class="breadcrumb">

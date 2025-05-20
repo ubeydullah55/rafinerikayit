@@ -36,3 +36,7 @@ $routes->post('takoz/cesniEkle', 'Home::cesniEkle');
 $routes->post('takoz/kaydet', 'AddGoldController::kaydet');
 
 $routes->post('takoz/kalancesniEkle', 'Home::kalancesniEkle');
+
+$routes->get('home/eritme', 'Home::eritme');
+
+$routes->post('home/uretTakoz', 'Home::uretTakoz');
