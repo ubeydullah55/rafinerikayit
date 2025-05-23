@@ -20,7 +20,7 @@
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
                             <h4>Rafineri Takoz Listesi</h4>
-                              <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
+                            <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
                                 Ayar Evi
                             </button>
@@ -65,9 +65,9 @@
 
                         <thead>
                             <tr>
-                                  <th>
-                        <input type="checkbox" id="select-all">
-                    </th>
+                                <th>
+                                    <input type="checkbox" id="select-all">
+                                </th>
                                 <th>Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
@@ -86,10 +86,10 @@
                             ?>
 
                             <?php foreach ($items as $item): ?>
-                               <tr>
-                                  <td>
-                            <input type="checkbox" class="select-row" value="<?= $item['id']; ?>">
-                        </td>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>">
+                                    </td>
                                     <td><?= esc($item['id']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
@@ -99,7 +99,7 @@
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
-                              
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -108,10 +108,10 @@
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
                                 <td style="font-weight:bold;"><?= number_format($totalGram, 3); ?> gr</td>
                                 <td colspan="3"><button type="button" id="erit-button" class="btn btn-success">
-    Erit
-</button></td>
+                                        Erit
+                                    </button></td>
                             </tr>
-                            
+
                         </tfoot>
                     </table>
                 </div>
@@ -183,6 +183,112 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- Sadece ağırlık alanları olacak -->
+<div class="modal fade" id="uretTakozModal" tabindex="-1" role="dialog" aria-labelledby="uretTakozModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <form id="uretTakozForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Yeni Takoz Üret</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="uret_takoz_ids" name="ids[]">
+
+          <div class="form-group">
+            <label for="uret_adet">Üretilecek Takoz Adedi</label>
+            <input type="number" min="1" class="form-control" id="uret_adet" required>
+          </div>
+
+          <div id="uret_takoz_inputlari"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Kaydet</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<script>
+    // Modal açıldığında: ID'leri al ve modalı göster
+document.getElementById('erit-button').addEventListener('click', function () {
+  const selectedIds = Array.from(document.querySelectorAll('.select-row:checked')).map(cb => cb.value);
+
+  if (selectedIds.length === 0) {
+    alert('Lütfen en az bir takoz seçin.');
+    return;
+  }
+
+  document.getElementById('uret_takoz_ids').value = selectedIds.join(',');
+  document.getElementById('uret_adet').value = '';
+  document.getElementById('uret_takoz_inputlari').innerHTML = '';
+  $('#uretTakozModal').modal('show');
+});
+
+// Adet girilince sadece ağırlık inputları oluştur
+document.getElementById('uret_adet').addEventListener('input', function () {
+  const adet = parseInt(this.value);
+  const container = document.getElementById('uret_takoz_inputlari');
+  container.innerHTML = '';
+
+  if (adet > 0) {
+    for (let i = 1; i <= adet; i++) {
+      container.innerHTML += `
+        <div class="form-group">
+          <label>${i}. Takoz Ağırlığı (gr)</label>
+          <input type="number" name="agirlik[]" step="0.01" class="form-control" required>
+        </div>
+      `;
+    }
+  }
+});
+
+// Form submit: sadece ID'ler ve ağırlıklar JSON olarak gönderilir
+document.getElementById('uretTakozForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const ids = document.getElementById('uret_takoz_ids').value.split(',');
+  const agirliklar = Array.from(form.querySelectorAll('input[name="agirlik[]"]')).map(i => i.value);
+
+  const takozlar = agirliklar.map(a => ({
+    agirlik: a
+  }));
+
+  fetch("<?= base_url('home/uretTakoz') ?>", {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+      ids: ids,
+      takozlar: takozlar
+    })
+  }).then(res => res.json()).then(data => {
+    if (data.success) {
+      alert("Takozlar başarıyla üretildi!");
+      $('#uretTakozModal').modal('hide');
+      location.reload();
+    } else {
+      alert("Bir hata oluştu: " + data.error);
+    }
+  }).catch(err => {
+    console.error(err);
+    alert("Sunucu hatası.");
+  });
+});
+
+</script>
+
 
 
 
@@ -369,51 +475,7 @@
     }
 </script>
 
-<script>
-    document.getElementById('erit-button').addEventListener('click', function () {
-    const selectedIds = Array.from(document.querySelectorAll('.select-row:checked')).map(cb => cb.value);
 
-    if (selectedIds.length === 0) {
-        alert('Lütfen en az bir takoz seçin.');
-        return;
-    }
-
-    const adet = prompt("Kaç adet takoz üretildi?");
-    if (!adet || isNaN(adet)) return;
-
-    const takozlar = [];
-
-    for (let i = 1; i <= adet; i++) {
-        const agirlik = prompt(`${i}. Takozun ağırlığı (gram):`);
-        const milyem = prompt(`${i}. Takozun milyemi:`);
-
-        if (!agirlik || !milyem) return;
-
-        takozlar.push({ agirlik, milyem });
-    }
-
-    // AJAX ile sunucuya gönder
-    fetch("<?= base_url('home/uretTakoz') ?>", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({
-            ids: selectedIds,
-            takozlar: takozlar
-        })
-    }).then(res => res.json()).then(data => {
-        if (data.success) {
-            alert("Takozlar başarıyla üretildi!");
-            location.reload();
-        } else {
-            alert("Bir hata oluştu: " + data.error);
-        }
-    });
-});
-
-</script>
 
 
 <?= view('include/footer') ?>

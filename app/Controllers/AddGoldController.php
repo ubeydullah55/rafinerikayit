@@ -22,15 +22,23 @@ class AddGoldController extends BaseController
 public function kaydet()
 {
     $request = service('request');
+
+    $altin_turu = $request->getPost('altin_turu'); // 0 = Hurda, 1 = Takoz
+
     $data = [
         'musteri' => $request->getPost('musteri'),
         'giris_gram' => floatval($request->getPost('giris_agirlik')),
         'tahmini_milyem' => floatval($request->getPost('tahmini_milyem')),
         'musteri_notu' => $request->getPost('musteri_notu'),
-        'status_code' => 1, // Yeni eklenenler genelde beklemede olur
+        'status_code' => 1, // Bekleme durumu
     ];
 
-    $model = new \App\Models\TakozModel();
+    // Modeli seç
+    if ($altin_turu == '0') {
+        $model = new \App\Models\HurdaModel(); // Hurda'ya ekle
+    } else {
+        $model = new \App\Models\TakozModel(); // Takoz'a ekle
+    }
 
     if ($model->insert($data)) {
         return redirect()->back()->with('success', 'Kayıt başarıyla eklendi.');
@@ -38,6 +46,7 @@ public function kaydet()
         return redirect()->back()->with('error', 'Kayıt eklenirken hata oluştu.');
     }
 }
+
 
 
     public function savecustomer()

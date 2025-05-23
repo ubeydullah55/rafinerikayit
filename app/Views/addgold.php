@@ -25,16 +25,16 @@
                             <input type="text" name="musteri" class="form-control" oninput="this.value = fixTurkishUppercase(this.value);" required />
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-12">
+                    <div class="col-md-2 col-sm-12">
                         <div class="form-group">
                             <label>Giriş Miktarı<span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" name="giris_agirlik" class="form-control"  required />
+                            <input type="number" step="0.01" name="giris_agirlik" class="form-control" required />
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-12">
+                    <div class="col-md-2 col-sm-12">
                         <div class="form-group">
                             <label>Tahmini Milyem</label>
-                            <input type="number" step="0.01" name="tahmini_milyem" class="form-control" required/>
+                            <input type="number" step="0.01" name="tahmini_milyem" class="form-control" required />
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-12">
@@ -43,11 +43,19 @@
                             <input type="text" name="musteri_notu" class="form-control" oninput="this.value = fixTurkishUppercase(this.value);" />
                         </div>
                     </div>
-                 
+                    <div class="col-md-2 col-sm-12">
+                        <div class="form-group">
+                            <label>Tür</label>
+                            <select name="altin_turu" class="form-control">
+                                <option value="0">Hurda</option>
+                                <option value="1">Takoz</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-              
-                   
-              
+
+
+
                 <br>
                 <div class="btn-list">
                     <button type="submit" class="btn btn-success btn-lg btn-block">
@@ -78,4 +86,3 @@
         return val.replace(/i/g, 'İ').toUpperCase();
     }
 </script>
-

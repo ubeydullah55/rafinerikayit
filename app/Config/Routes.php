@@ -30,6 +30,7 @@ $routes->get('/grafik', 'GrafikController::index');
 
 $routes->get('/addgold', 'AddGoldController::index');
 $routes->post('takoz/ilerletAjax/(:num)', 'Home::ilerletAjax/$1');
+$routes->post('hurda/ilerletAjax/(:num)', 'Home::ilerletAjaxHurda/$1');
 $routes->get('home/ayarevi', 'Home::ayarevi');
 
 $routes->post('takoz/cesniEkle', 'Home::cesniEkle');
@@ -40,3 +41,5 @@ $routes->post('takoz/kalancesniEkle', 'Home::kalancesniEkle');
 $routes->get('home/eritme', 'Home::eritme');
 
 $routes->post('home/uretTakoz', 'Home::uretTakoz');
+
+$routes->post('takozHurda/hurdaTakozYap', 'Home::hurdaTakozYap');

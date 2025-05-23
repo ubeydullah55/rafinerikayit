@@ -19,7 +19,7 @@
 				<div class="row">
 					<div class="col-md-6 col-sm-12">
 						<div class="title">
-							<h4>Rafineri Takoz Listesi</h4>
+							<h4>MAL KABUL</h4>
 							  <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
                             <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
                                 Ayar Evi
@@ -57,7 +57,7 @@
 
 			<div class="card-box mb-30">
 				<div class="pd-20">
-					<h4 class="text-blue h4">MAL KABUL</h4>
+					<h4 class="text-blue h4">TAKOZLAR</h4>
 				</div>
 				<div class="pb-20">
 					<table
@@ -105,6 +105,68 @@
 									</td>
 								</tr>
 							<?php endforeach; ?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
+								<td style="font-weight:bold;"><?= number_format($totalGram, 2); ?> gr</td>
+								<td colspan="3"></td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+
+			<div class="card-box mb-30">
+				<div class="pd-20">
+					<h4 class="text-blue h4">HURDALAR</h4>
+				</div>
+				<div class="pb-20">
+					<table
+						class="table hover multiple-select-row data-table-export nowrap">
+
+						<thead>
+							<tr>
+								<th>Fiş No</th>
+								<th class="table-plus datatable-nosort">Müşteri</th>
+								<th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
+								<th class="table-plus datatable-nosort">Tahmini Milyem</th>
+								<th class="table-plus datatable-nosort">Tahmini Has</th>
+								<th class="table-plus datatable-nosort">Müşteri Notu</th>
+								<th class="table-plus datatable-nosort">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							// Session'dan role değerini alalım
+							$role = session()->get('role');
+							?>
+
+							<?php foreach ($hurdalar as $item): ?>
+								<tr>
+									<td><?= esc($item['id']); ?></td>
+									<td class="table-plus"><?= esc($item['musteri']); ?></td>
+									<td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
+									<td><?= esc($item['tahmini_milyem']); ?></td>
+									<td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
+									<td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
+									<td>
+										<div class="dropdown">
+											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+												<i class="dw dw-more"></i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+												<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> İncele</a>
+												<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
+												<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Sil</a>
+												<a href="#" onclick="ilerletHurda(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+													<i class="dw dw-enter-1"></i> İlerlet
+												</a>
+											</div>
+										</div>
+									</td>
+								</tr>
+							<?php endforeach; ?>
 
 
 
@@ -115,7 +177,7 @@
 						<tfoot>
 							<tr>
 								<td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-								<td style="font-weight:bold;"><?= number_format($totalGram, 2); ?> gr</td>
+								<td style="font-weight:bold;"><?= number_format($hurdatotalGram, 2); ?> gr</td>
 								<td colspan="3"></td>
 							</tr>
 						</tfoot>
@@ -280,7 +342,49 @@
 	}
 </script>
 
-
+<script>
+	function ilerletHurda(id, musteri) {
+		Swal.fire({
+			title: 'Emin misin?',
+			text: musteri + ' için ilerletme işlemi yapmak istediğine emin misin?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Evet, ilerlet!',
+			cancelButtonText: 'Vazgeç'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				fetch('<?= base_url('hurda/ilerletAjax/'); ?>' + id, {
+						method: 'POST',
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({})
+					})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							Swal.fire(
+								'İşlem Başarılı!',
+								'Müşteri ilerletildi.',
+								'success'
+							).then(() => {
+								location.reload(); // sayfayı yenile
+							});
+						} else {
+							Swal.fire('Hata', 'İşlem gerçekleştirilemedi.', 'error');
+						}
+					})
+					.catch(error => {
+						console.error('Hata:', error);
+						Swal.fire('Hata', 'Sunucuya erişilemedi.', 'error');
+					});
+			}
+		});
+	}
+</script>
 
 
 
