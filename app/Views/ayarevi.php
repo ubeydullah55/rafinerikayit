@@ -202,6 +202,82 @@
 
 
 
+
+ <div class="card-box mb-30">
+                <div class="pd-20">
+                    <h4 class="text-blue h4">HAS TAKOZLAR</h4>
+                </div>
+                <div class="pb-20">
+                    <table
+                        class="table hover multiple-select-row data-table-export nowrap">
+
+                        <thead>
+                            <tr>
+                                <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
+                                 <th class="table-plus datatable-nosort">Tahmini Milyem</th>
+                                <th class="table-plus datatable-nosort">İşlem Gören Miktar</th>
+                                <th class="table-plus datatable-nosort">Alınan Çeşni Ağırlığı</th>
+                                <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
+                                <th class="table-plus datatable-nosort">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Session'dan role değerini alalım
+                            $role = session()->get('role');
+                            ?>
+
+                            <?php foreach ($hastakozlar as $item): ?>
+                                <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
+                                    <td><?= esc($item['id']); ?></td>
+                                    <td><?= number_format(esc($item['agirlik']), 2); ?> gr</td>
+                                    <td>9999</td>
+                                 <td><?= esc($item['islem_goren_miktar']); ?></td>
+                                    <td><?= esc($item['cesni_gram']); ?></td>
+                                    <td><?= esc($item['milyem']); ?></td> 
+                                    <td>
+                                        <div class="dropdown">
+                                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                                                <i class="dw dw-more"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                                <a class="dropdown-item" href="#"><i class="dw dw-eye"></i> İncele</a>
+                                                <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
+                                                <?php if ($item['cesni_gram'] ==  0): ?>
+                                                    <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
+                                                        <i class="dw dw-brightness1"></i> Çeşni Al
+                                                    </a>
+                                                <?php endif; ?>
+                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0): ?>
+                                                    <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+                                                        <i class="dw dw-enter-1"></i> İlerlet
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </td> 
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
+                                <td style="font-weight:bold;"><?= number_format($totalHasTakozGram, 3); ?> gr</td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+
+
+
+
+
+            
+
             <!--#region çeşniler  -->
 
             <div class="card-box mb-30">

@@ -12,7 +12,10 @@ class HasTakozModel extends Model
     protected $allowedFields = [
         'agirlik',
         'milyem',
-        'grup_kodu'
+        'grup_kodu',
+        'islem_goren_miktar',
+        'cesni_gram',
+        'status_code'
     ];
 
     protected $returnType = 'array'; // Dilersen 'object' da yapabilirsin

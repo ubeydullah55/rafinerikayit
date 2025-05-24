@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\CesniModel;
+use App\Models\HasTakozModel;
 use App\Models\HurdaModel;
 use App\Models\TakozModel;
 use CodeIgniter\Model;
@@ -44,6 +45,7 @@ class Home extends BaseController
         $model = new TakozModel();
         $modelcesni = new CesniModel();
         $hurdamodel = new HurdaModel();
+        $hastakozmodel = new HasTakozModel();
         $db = \Config\Database::connect();
 
 
@@ -90,8 +92,16 @@ class Home extends BaseController
             }
         }
 
+ $hastakozlar=$hastakozmodel->where('status_code', 0)->findAll();
+    $totalHasTakozGram = 0;
 
-
+        foreach ($hastakozlar as $item) {
+            if ($item['islem_goren_miktar'] > 0) {
+                $totalHasTakozGram += $item['islem_goren_miktar'];
+            } else {
+                $totalHasTakozGram += $item['agirlik'];
+            }
+        }
         return view('ayarevi', [
             'items' => $items,
             'totalGram' => $totalGram,
@@ -100,6 +110,8 @@ class Home extends BaseController
             'totalCesni' => $totalCesniGram,
             'hurdalar' => $hurdalar,
             'hurdatotalGram' => $hurdatotalGram,
+            'hastakozlar'=>$hastakozlar,
+            'totalHasTakozGram'=>$totalHasTakozGram
         ]);
     }
 
