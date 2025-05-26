@@ -180,6 +180,13 @@
 						<span class="micon bi bi-plus"></span><span class="mtext">Külçe Ekle</span>
 					</a>
 				</li>
+					<?php if ($role == 1): ?>
+					<li>
+						<a href="<?= site_url('kasaHesap') ?>" class="dropdown-toggle no-arrow">
+							<span class="micon bi bi-cash"></span><span class="mtext">Kasa Hesap</span>
+						</a>
+					</li>
+				<?php endif; ?>
 				<?php if ($role == 1): ?>
 					<li>
 						<a href="<?= site_url('addpersonel') ?>" class="dropdown-toggle no-arrow">
@@ -187,6 +194,7 @@
 						</a>
 					</li>
 				<?php endif; ?>
+			
 			</ul>
 
 		</div>

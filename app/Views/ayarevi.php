@@ -89,8 +89,13 @@
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
-                                    <td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
-                                    <td><?= esc($item['islem_goren_miktar']); ?></td>
+                                         <td>
+                                        <?php
+                                        $gram = !empty($item['islem_goren_miktar']) ? $item['islem_goren_miktar'] : $item['giris_gram'];
+                                        echo number_format($gram * ($item['tahmini_milyem'] / 1000), 2);
+                                        ?> gr
+                                    </td>
+                                    <td><?= number_format(esc($item['islem_goren_miktar']),2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
@@ -121,7 +126,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($totalGram, 3); ?> gr</td>
+                                <td style="font-weight:bold;"><?= number_format($totalGram, 2); ?> gr</td>
                                 <td colspan="3"></td>
                             </tr>
                         </tfoot>
@@ -189,7 +194,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($hurdatotalGram, 3); ?> gr</td>
+                                <td style="font-weight:bold;"><?= number_format($hurdatotalGram, 2); ?> gr</td>
                                 <td colspan="3"></td>
                             </tr>
                         </tfoot>
@@ -211,14 +216,17 @@
                     <table
                         class="table hover multiple-select-row data-table-export nowrap">
 
-                        <thead>
+                            <thead>
                             <tr>
                                 <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
-                                 <th class="table-plus datatable-nosort">Tahmini Milyem</th>
+                                <th class="table-plus datatable-nosort">Tahmini Milyem</th>
+          
                                 <th class="table-plus datatable-nosort">İşlem Gören Miktar</th>
                                 <th class="table-plus datatable-nosort">Alınan Çeşni Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
+                                <th class="table-plus datatable-nosort">Müşteri Notu</th>
                                 <th class="table-plus datatable-nosort">Action</th>
                             </tr>
                         </thead>
@@ -231,11 +239,13 @@
                             <?php foreach ($hastakozlar as $item): ?>
                                 <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
                                     <td><?= esc($item['id']); ?></td>
-                                    <td><?= number_format(esc($item['agirlik']), 2); ?> gr</td>
-                                    <td>9999</td>
-                                 <td><?= esc($item['islem_goren_miktar']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                                    <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
+                                    <td><?= esc($item['tahmini_milyem']); ?></td>
+                                    <td><?= number_format(esc($item['islem_goren_miktar']),2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
-                                    <td><?= esc($item['milyem']); ?></td> 
+                                    <td><?= esc($item['olculen_milyem']); ?></td>
+                                    <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
                                     <td>
                                         <div class="dropdown">
                                             <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -256,14 +266,14 @@
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-                                    </td> 
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($totalHasTakozGram, 3); ?> gr</td>
+                                <td style="font-weight:bold;"><?= number_format($totalHasTakozGram, 2); ?> gr</td>
                                 <td colspan="3"></td>
                             </tr>
                         </tfoot>
@@ -325,7 +335,7 @@
                                                         <i class="dw dw-brightness1"></i> Kalan Gram Gir
                                                     </a>
                                                 <?php endif; ?>
-                                                <a href="#" onclick="ilerletTakoz(<?= $item['fis_no']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+                                                <a href="#" onclick="ilerletCesni(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
                                                     <i class="dw dw-enter-1"></i> İlerlet
                                                 </a>
                                             </div>
@@ -337,7 +347,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($totalCesni, 3); ?> gr</td>
+                                <td style="font-weight:bold;"><?= number_format($totalCesni, 2); ?> gr</td>
                                 <td colspan="3"></td>
                             </tr>
                         </tfoot>
@@ -570,6 +580,52 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch('<?= base_url('takoz/ilerletAjax/'); ?>' + id, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'İşlem Başarılı!',
+                                'Müşteri ilerletildi.',
+                                'success'
+                            ).then(() => {
+                                location.reload(); // sayfayı yenile
+                            });
+                        } else {
+                            Swal.fire('Hata', 'İşlem gerçekleştirilemedi.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Hata:', error);
+                        Swal.fire('Hata', 'Sunucuya erişilemedi.', 'error');
+                    });
+            }
+        });
+    }
+</script>
+
+
+<!-- ÇEŞNİ İLERLETME -->
+<script>
+    function ilerletCesni(id, musteri) {
+        Swal.fire({
+            title: 'Emin misin?',
+            text: musteri + ' için ilerletme işlemi yapmak istediğine emin misin?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, ilerlet!',
+            cancelButtonText: 'Vazgeç'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('<?= base_url('cesni/ilerletCesniAjax/'); ?>' + id, {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',

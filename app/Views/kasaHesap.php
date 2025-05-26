@@ -16,31 +16,7 @@
                         <?= session()->getFlashdata('error') ?>
                     </div>
                 <?php endif; ?>
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <div class="title">
-                            <h4>Rafineri Takoz Listesi</h4>
-                            <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
-                                Ayar Evi
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
-                                İfraz
-                            </button>
-                        </div>
-                        <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="index.html">Anasayfa</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    Liste
-                                </li>
-                            </ol>
-                        </nav>
-                    </div>
 
-                </div>
             </div>
             <!-- Simple Datatable start -->
 
@@ -57,7 +33,7 @@
 
             <div class="card-box mb-30">
                 <div class="pd-20">
-                    <h4 class="text-blue h4">REAKTÖR</h4>
+                    <h4 class="text-blue h4">KASA KÜLÇE TAKİP</h4>
                 </div>
                 <div class="pb-20">
                     <table
@@ -65,9 +41,7 @@
 
                         <thead>
                             <tr>
-                                <th>
-                                    <input type="checkbox" id="select-all">
-                                </th>
+
                                 <th>Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
@@ -77,6 +51,7 @@
                                 <th class="table-plus datatable-nosort">Alınan Çeşni Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
                                 <th class="table-plus datatable-nosort">Müşteri Notu</th>
+                                <th class="table-plus datatable-nosort">Ölçüm Has</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,35 +62,25 @@
 
                             <?php foreach ($items as $item): ?>
                                 <tr>
-                                    <td>
-                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['giris_gram'] * ($item['tahmini_milyem'] / 1000) ?>">
-                                    </td>
 
                                     <td><?= esc($item['id']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
-                                    <td>
-                                        <?php
-                                        $gram = !empty($item['islem_goren_miktar']) ? $item['islem_goren_miktar'] : $item['giris_gram'];
-                                        echo number_format($gram * ($item['tahmini_milyem'] / 1000), 2);
-                                        ?> gr
-                                    </td>
+                                    <td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
                                     <td><?= esc($item['islem_goren_miktar']); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
-
+                                    <td><?= number_format($item['giris_gram'] * ($item['olculen_milyem'] / 1000), 2); ?> gr</td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($totalGram, 2); ?> gr</td>
-                                <td colspan="3"><button type="button" id="erit-button" class="btn btn-success">
-                                        Reaktöre At
-                                    </button></td>
+                                <td style="font-weight:bold;"><?= number_format($totalGram, 3); ?> gr</td>
+                               
                             </tr>
 
                         </tfoot>
@@ -137,7 +102,58 @@
         </div>
     </div>
 </div>
+<!-- Çeşni Modalı -->
+<div class="modal fade" id="cesniModal" tabindex="-1" role="dialog" aria-labelledby="cesniModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="cesniForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cesniModalLabel">Çeşni Miktarı Gir</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cesniId" name="id">
+                    <div class="form-group">
+                        <label for="cesniGram">Çeşni Gramı</label>
+                        <input type="number" step="0.001" min="0" class="form-control" id="cesniGram" name="cesni_gram" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="kalancesniModal" tabindex="-1" role="dialog" aria-labelledby="kalancesniModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="kalancesniForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="kalancesniModalLabel">Çeşni Miktarı Gir</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cesniId" name="id">
+                    <div class="form-group">
+                        <label for="cesniGram">Kalan Çeşni Gramı</label>
+                        <input type="number" step="0.001" min="0" class="form-control" id="kalancesniGram" name="kalan_cesni_gram" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 
@@ -165,40 +181,6 @@
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Kaydet</button>
                 </div>
-        <div class="row">
-    <!-- SOL SÜTUN -->
-    <div class="col-md-6">
-        <div class="form-group text-center">
-            <label>Seçilen Toplam Ağırlık (gr):</label>
-            <div id="toplam_agirlik" class="form-control-plaintext font-weight-bold text-primary"></div>
-        </div>
-
-        <div class="form-group text-center">
-            <label>Asit 1 Miktarı (gr):</label>
-            <div id="asit1_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
-        </div>
-
-        <div class="form-group text-center">
-            <label>Asit 2 Miktarı (gr):</label>
-            <div id="asit2_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
-        </div>
-    </div>
-
-    <!-- SAĞ SÜTUN -->
-    <div class="col-md-6">
-        <div class="form-group text-center">
-            <label>Girdiğiniz Toplam Ağırlık:</label>
-            <div id="toplam_input_agirlik" class="form-control-plaintext font-weight-bold text-info">0 gr</div>
-        </div>
-
-        <div class="form-group text-center">
-            <label>Fire Miktarı:</label>
-            <div id="fire_miktar" class="form-control-plaintext font-weight-bold text-danger">0 gr</div>
-        </div>
-    </div>
-</div>
-
-
             </div>
         </form>
     </div>
@@ -219,25 +201,6 @@
         document.getElementById('uret_takoz_ids').value = selectedIds.join(',');
         document.getElementById('uret_adet').value = '';
         document.getElementById('uret_takoz_inputlari').innerHTML = '';
-
-
-        // Seçilen takozların toplam ağırlığını hesapla
-        let toplamAgirlik = 0;
-
-        document.querySelectorAll('.select-row:checked').forEach(cb => {
-            const agirlik = parseFloat(cb.getAttribute('data-agirlik')) || 0;
-            toplamAgirlik += agirlik;
-        });
-
-        const asit1 = toplamAgirlik * 1.5;
-        const asit2 = asit1 * 3;
-
-        // Label gibi görünen alanlara yaz
-        document.getElementById('toplam_agirlik').textContent = toplamAgirlik.toFixed(2) + ' gr';
-        document.getElementById('asit1_miktar').textContent = asit1.toFixed(2) + ' gr';
-        document.getElementById('asit2_miktar').textContent = asit2.toFixed(2) + ' gr';
-
-
         $('#uretTakozModal').modal('show');
     });
 
@@ -294,42 +257,6 @@
             alert("Sunucu hatası.");
         });
     });
-
-
-    let secilenToplamAgirlik = 0; // Global değişken
-
-    // Güncellenmiş erit-button içindeki toplam ağırlığı kaydet
-    document.getElementById('erit-button').addEventListener('click', function() {
-        secilenToplamAgirlik = 0;
-        document.querySelectorAll('.select-row:checked').forEach(cb => {
-            const agirlik = parseFloat(cb.getAttribute('data-has')) || 0;
-            secilenToplamAgirlik += agirlik;
-        });
-
-        // Güncel label'lara yazma burada zaten var ama fire hesaplaması için tekrar ettik
-        document.getElementById('toplam_input_agirlik').textContent = '0 gr';
-        document.getElementById('fire_miktar').textContent = secilenToplamAgirlik.toFixed(2) + ' gr';
-    });
-
-    // Ağırlık inputları oluşturulduğunda event ekle
-    document.getElementById('uret_adet').addEventListener('input', function() {
-        setTimeout(() => {
-            document.querySelectorAll('input[name="agirlik[]"]').forEach(input => {
-                input.addEventListener('input', hesaplaFire);
-            });
-        }, 100);
-    });
-
-    function hesaplaFire() {
-        const agirliklar = Array.from(document.querySelectorAll('input[name="agirlik[]"]'))
-            .map(input => parseFloat(input.value) || 0);
-
-        const toplamInputAgirlik = agirliklar.reduce((a, b) => a + b, 0);
-        const fire = secilenToplamAgirlik - toplamInputAgirlik;
-
-        document.getElementById('toplam_input_agirlik').textContent = toplamInputAgirlik.toFixed(2) + ' gr';
-        document.getElementById('fire_miktar').textContent = fire.toFixed(2) + ' gr';
-    }
 </script>
 
 

@@ -43,3 +43,10 @@ $routes->get('home/eritme', 'Home::eritme');
 $routes->post('home/uretTakoz', 'Home::uretTakoz');
 
 $routes->post('takozHurda/hurdaTakozYap', 'Home::hurdaTakozYap');
+
+
+$routes->get('/kasaHesap', 'Home::kasaHesap');
+
+
+
+$routes->post('cesni/ilerletCesniAjax/(:num)', 'Home::ilerletCesniAjax/$1');

@@ -92,16 +92,19 @@ class Home extends BaseController
             }
         }
 
- $hastakozlar=$hastakozmodel->where('status_code', 0)->findAll();
+ $hastakozlar=$model->where('status_code', 5)->findAll();
     $totalHasTakozGram = 0;
 
         foreach ($hastakozlar as $item) {
-            if ($item['islem_goren_miktar'] > 0) {
+            if ($item['cesni_has'] > 0) {
                 $totalHasTakozGram += $item['islem_goren_miktar'];
             } else {
-                $totalHasTakozGram += $item['agirlik'];
+                $totalHasTakozGram += $item['giris_gram'];
             }
         }
+
+
+
         return view('ayarevi', [
             'items' => $items,
             'totalGram' => $totalGram,
@@ -315,6 +318,62 @@ class Home extends BaseController
         ]);
     }
 
+public function ilerletCesniAjax($id)
+{
+    if ($this->request->isAJAX()) {
+        $model = new \App\Models\CesniModel();
+        $takozmodel = new \App\Models\TakozModel();
+
+        // Önce mevcut çeșni kaydını al
+        $current = $model->find($id);
+
+        if ($current) {
+            // Mevcut status_code'yi bir artır
+            $newStatus = $current['status_code'] + 1;
+
+            // Güncelle
+            $updated = $model->update($id, ['status_code' => $newStatus]);
+
+            // ✅ TakozModel'e yeni kayıt ekle
+            // CesniModel içinden fis_no alınıyor ve ona göre CesniModel'den kayıt çekiliyor
+            $fisNo = $current['fis_no'] ?? null;
+
+            if ($fisNo) {
+                // Aynı fis_no'ya ait kayıtları bul
+                $cesniData = $takozmodel->where('id', $fisNo)->first();
+
+                if ($cesniData) {
+                    $takozmodel->insert([
+                        'musteri'            => $cesniData['musteri']. ' ÇEŞNİ',
+                        'giris_gram'         => $cesniData['cesni_has'],
+                        'islem_goren_miktar'         => $cesniData['cesni_has'],
+                        'tahmini_milyem'     => 999.9,
+                        'status_code'        => 3,
+                        'olculen_milyem'     => 999.9,
+                        'musteri_notu'       => $cesniData['musteri_notu'],
+                        'cesni_id'           => $id
+                    ]);
+                }
+            }
+
+            return $this->response->setJSON([
+                'success' => $updated ? true : false,
+                'new_status_code' => $newStatus
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'error' => 'Kayıt bulunamadı'
+            ]);
+        }
+    }
+
+    return $this->response->setJSON([
+        'success' => false,
+        'error' => 'AJAX değil'
+    ]);
+}
+
 
 
 public function uretTakoz()
@@ -333,14 +392,17 @@ public function uretTakoz()
         $takozModel = new \App\Models\TakozModel();
 
         // Veritabanındaki en büyük grup_kodu'nu al
-        $sonGrupKodu = (int) ($hasTakozModel->selectMax('grup_kodu')->first()['grup_kodu'] ?? 0);
+        $sonGrupKodu = (int) ($takozModel->selectMax('grup_kodu')->first()['grup_kodu'] ?? 0);
         $groupCode = $sonGrupKodu + 1;
 
         // Her takoz için yeni kayıt (sadece ağırlık bilgisi)
         foreach ($takozlar as $t) {
-            $hasTakozModel->insert([
-                'agirlik' => $t['agirlik'],
-                'grup_kodu' => $groupCode
+            $takozModel->insert([
+                'musteri'=>'HasTakoz',
+                'giris_gram' => $t['agirlik'],
+                'grup_kodu' => $groupCode,
+                'tahmini_milyem'=>9999,
+                'status_code'=>5
             ]);
         }
 
@@ -425,5 +487,30 @@ public function hurdaTakozYap()
 
         // View'a verileri göndereceğiz
         return view('homepage', ['customers' => $customers]);
+    }
+
+
+    public function kasaHesap()
+    {
+        
+        $model = new TakozModel();
+        $hurdamodel = new HurdaModel();
+        // Tüm takozları veritabanından çek
+       $items = $model->where('status_code', 4)
+               ->where('hurda_grup_kodu <=', 0)
+               ->findAll();
+        $hurdalar=$hurdamodel->where('status_code', 1)->findAll();
+
+        // Toplam gramajı hesapla
+        $totalGram = array_sum(array_column($items, 'giris_gram'));
+        $hurdatotalGram = array_sum(array_column($hurdalar, 'giris_gram'));
+        return view('kasaHesap', [
+            'items' => $items,
+            'totalGram' => $totalGram,
+            'hurdalar' => $hurdalar,
+            'hurdatotalGram' => $hurdatotalGram,
+            'role' => session()->get('role'),
+        ]);
+
     }
 }
