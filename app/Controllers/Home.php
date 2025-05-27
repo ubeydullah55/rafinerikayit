@@ -351,7 +351,8 @@ class Home extends BaseController
                             'status_code'        => 3,
                             'olculen_milyem'     => 999.9,
                             'musteri_notu'       => $cesniData['musteri_notu'],
-                            'cesni_id'           => $id
+                            'cesni_id'           => $id,
+                            'tur'=>1 //çeşni olarak eklendi
                         ]);
                     }
                 }
@@ -402,7 +403,8 @@ class Home extends BaseController
                     'giris_gram' => $t['agirlik'],
                     'grup_kodu' => $groupCode,
                     'tahmini_milyem' => 999.9,
-                    'status_code' => 5
+                    'status_code' => 5,
+                    'tur'=>2 //hastakoz olarak eklendi
                 ]);
             }
 
@@ -626,19 +628,24 @@ class Home extends BaseController
             $gecmis = [$takoz];
         }
 
-        $sumStatus5 = $takozModel
-    ->selectSum('giris_gram', 'total_gram')
-    ->where('grup_kodu', $grupKodu)
-    ->where('status_code', 5)
-    ->first()['total_gram'] ?? 0;
 
-$sumStatus4 = $takozModel
-    ->selectSum('giris_gram', 'total_gram')
-    ->where('grup_kodu', $grupKodu)
-    ->where('status_code', 4)
-    ->first()['total_gram'] ?? 0;
 
-$reaktor_fire = $sumStatus4 - $sumStatus5;
+        $reaktorFire=0;
+        $eldekiToplamHas=0;
+        $cikanHasTakoz=0;
+        foreach ($gecmis as $t) {
+          if($t['tur']==0){
+            $eldekiToplamHas+=($t['islem_goren_miktar']*$t['olculen_milyem'])/1000;
+          }
+           if($t['tur']==1){
+            $eldekiToplamHas+=$t['giris_gram'];
+          }
+          if($t['tur']==2)
+          {
+            $cikanHasTakoz+=$t['giris_gram'];
+          }
+        }
+        $reaktorFire=$eldekiToplamHas -$cikanHasTakoz;
 
         $eritmeFire=0;
         foreach ($gecmis as $t) {
@@ -677,7 +684,7 @@ $reaktor_fire = $sumStatus4 - $sumStatus5;
         return view('incele_partial', [
             'gecmis' => $gecmis,
             'eritme_fire' =>$eritmeFire,
-            'reaktor_fire'=>$reaktor_fire
+            'reaktor_fire'=>$reaktorFire
         ]);
     }
 }

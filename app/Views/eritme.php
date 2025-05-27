@@ -88,7 +88,7 @@
                             <?php foreach ($items as $item): ?>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['giris_gram'] * ($item['tahmini_milyem'] / 1000) ?>">
+                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * ($item['tahmini_milyem'] / 1000) ?>">
                                     </td>
 
                                     <td><?= esc($item['id']); ?></td>
