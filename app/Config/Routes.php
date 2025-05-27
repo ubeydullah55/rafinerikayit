@@ -50,3 +50,5 @@ $routes->get('/kasaHesap', 'Home::kasaHesap');
 
 
 $routes->post('cesni/ilerletCesniAjax/(:num)', 'Home::ilerletCesniAjax/$1');
+
+$routes->post('cesni/incele', 'Home::inceleCesni');

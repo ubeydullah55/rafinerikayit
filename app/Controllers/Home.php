@@ -26,7 +26,7 @@ class Home extends BaseController
         $hurdamodel = new HurdaModel();
         // Tüm takozları veritabanından çek
         $items = $model->where('status_code', 1)->findAll();
-        $hurdalar=$hurdamodel->where('status_code', 1)->findAll();
+        $hurdalar = $hurdamodel->where('status_code', 1)->findAll();
 
         // Toplam gramajı hesapla
         $totalGram = array_sum(array_column($items, 'giris_gram'));
@@ -51,8 +51,8 @@ class Home extends BaseController
 
 
         // Tüm takozları veritabanından çek
-    
-        $hurdalar=$hurdamodel->where('status_code', 2)->findAll();
+
+        $hurdalar = $hurdamodel->where('status_code', 2)->findAll();
 
         // Toplam gramajı hesapla
         $hurdatotalGram = array_sum(array_column($hurdalar, 'giris_gram'));
@@ -92,8 +92,8 @@ class Home extends BaseController
             }
         }
 
- $hastakozlar=$model->where('status_code', 5)->findAll();
-    $totalHasTakozGram = 0;
+        $hastakozlar = $model->where('status_code', 5)->findAll();
+        $totalHasTakozGram = 0;
 
         foreach ($hastakozlar as $item) {
             if ($item['cesni_has'] > 0) {
@@ -113,14 +113,14 @@ class Home extends BaseController
             'totalCesni' => $totalCesniGram,
             'hurdalar' => $hurdalar,
             'hurdatotalGram' => $hurdatotalGram,
-            'hastakozlar'=>$hastakozlar,
-            'totalHasTakozGram'=>$totalHasTakozGram
+            'hastakozlar' => $hastakozlar,
+            'totalHasTakozGram' => $totalHasTakozGram
         ]);
     }
 
 
 
-     public function eritme()
+    public function eritme()
     {
         $model = new TakozModel();
         $modelcesni = new CesniModel();
@@ -285,7 +285,7 @@ class Home extends BaseController
     }
 
 
-        public function ilerletAjaxHurda($id)
+    public function ilerletAjaxHurda($id)
     {
         if ($this->request->isAJAX()) {
             $model = new \App\Models\HurdaModel();
@@ -318,161 +318,161 @@ class Home extends BaseController
         ]);
     }
 
-public function ilerletCesniAjax($id)
-{
-    if ($this->request->isAJAX()) {
-        $model = new \App\Models\CesniModel();
-        $takozmodel = new \App\Models\TakozModel();
+    public function ilerletCesniAjax($id)
+    {
+        if ($this->request->isAJAX()) {
+            $model = new \App\Models\CesniModel();
+            $takozmodel = new \App\Models\TakozModel();
 
-        // Önce mevcut çeșni kaydını al
-        $current = $model->find($id);
+            // Önce mevcut çeșni kaydını al
+            $current = $model->find($id);
 
-        if ($current) {
-            // Mevcut status_code'yi bir artır
-            $newStatus = $current['status_code'] + 1;
+            if ($current) {
+                // Mevcut status_code'yi bir artır
+                $newStatus = $current['status_code'] + 1;
 
-            // Güncelle
-            $updated = $model->update($id, ['status_code' => $newStatus]);
+                // Güncelle
+                $updated = $model->update($id, ['status_code' => $newStatus]);
 
-            // ✅ TakozModel'e yeni kayıt ekle
-            // CesniModel içinden fis_no alınıyor ve ona göre CesniModel'den kayıt çekiliyor
-            $fisNo = $current['fis_no'] ?? null;
+                // ✅ TakozModel'e yeni kayıt ekle
+                // CesniModel içinden fis_no alınıyor ve ona göre CesniModel'den kayıt çekiliyor
+                $fisNo = $current['fis_no'] ?? null;
 
-            if ($fisNo) {
-                // Aynı fis_no'ya ait kayıtları bul
-                $cesniData = $takozmodel->where('id', $fisNo)->first();
+                if ($fisNo) {
+                    // Aynı fis_no'ya ait kayıtları bul
+                    $cesniData = $takozmodel->where('id', $fisNo)->first();
 
-                if ($cesniData) {
-                    $takozmodel->insert([
-                        'musteri'            => $cesniData['musteri']. ' ÇEŞNİ',
-                        'giris_gram'         => $cesniData['cesni_has'],
-                        'islem_goren_miktar'         => $cesniData['cesni_has'],
-                        'tahmini_milyem'     => 999.9,
-                        'status_code'        => 3,
-                        'olculen_milyem'     => 999.9,
-                        'musteri_notu'       => $cesniData['musteri_notu'],
-                        'cesni_id'           => $id
-                    ]);
+                    if ($cesniData) {
+                        $takozmodel->insert([
+                            'musteri'            => $cesniData['musteri'] . ' ÇEŞNİ',
+                            'giris_gram'         => $cesniData['cesni_has'],
+                            'islem_goren_miktar'         => $cesniData['cesni_has'],
+                            'tahmini_milyem'     => 999.9,
+                            'status_code'        => 3,
+                            'olculen_milyem'     => 999.9,
+                            'musteri_notu'       => $cesniData['musteri_notu'],
+                            'cesni_id'           => $id
+                        ]);
+                    }
                 }
+
+                return $this->response->setJSON([
+                    'success' => $updated ? true : false,
+                    'new_status_code' => $newStatus
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Kayıt bulunamadı'
+                ]);
+            }
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'error' => 'AJAX değil'
+        ]);
+    }
+
+
+
+    public function uretTakoz()
+    {
+        if ($this->request->isAJAX()) {
+            $data = $this->request->getJSON(true);
+
+            $ids = $data['ids'] ?? [];
+            $takozlar = $data['takozlar'] ?? [];
+
+            if (empty($ids) || empty($takozlar)) {
+                return $this->response->setJSON(['success' => false, 'error' => 'Eksik veri gönderildi.']);
             }
 
-            return $this->response->setJSON([
-                'success' => $updated ? true : false,
-                'new_status_code' => $newStatus
-            ]);
-        } else {
-            return $this->response->setJSON([
-                'success' => false,
-                'error' => 'Kayıt bulunamadı'
-            ]);
+            $hasTakozModel = new \App\Models\HasTakozModel();
+            $takozModel = new \App\Models\TakozModel();
+
+            // Veritabanındaki en büyük grup_kodu'nu al
+            $sonGrupKodu = (int) ($takozModel->selectMax('grup_kodu')->first()['grup_kodu'] ?? 0);
+            $groupCode = $sonGrupKodu + 1;
+
+            // Her takoz için yeni kayıt (sadece ağırlık bilgisi)
+            foreach ($takozlar as $t) {
+                $takozModel->insert([
+                    'musteri' => 'HasTakoz',
+                    'giris_gram' => $t['agirlik'],
+                    'grup_kodu' => $groupCode,
+                    'tahmini_milyem' => 999.9,
+                    'status_code' => 5
+                ]);
+            }
+
+            // Seçilen id'lerin grup kodunu ve durumunu güncelle
+            foreach ($ids as $id) {
+                $takozModel->update($id, [
+                    'grup_kodu' => $groupCode,
+                    'status_code' => 4 // İşlendi olarak işaretle
+                ]);
+            }
+
+            return $this->response->setJSON(['success' => true]);
         }
+
+        return $this->response->setJSON(['success' => false, 'error' => 'AJAX değil']);
     }
 
-    return $this->response->setJSON([
-        'success' => false,
-        'error' => 'AJAX değil'
-    ]);
-}
 
+    public function hurdaTakozYap()
+    {
+        $hurdaId = $this->request->getPost('hurda_id');
+        $adet = $this->request->getPost('adet');
+        $agirliklar = $this->request->getPost('takoz_agirlik');
 
-
-public function uretTakoz()
-{
-    if ($this->request->isAJAX()) {
-        $data = $this->request->getJSON(true);
-
-        $ids = $data['ids'] ?? [];
-        $takozlar = $data['takozlar'] ?? [];
-
-        if (empty($ids) || empty($takozlar)) {
-            return $this->response->setJSON(['success' => false, 'error' => 'Eksik veri gönderildi.']);
-        }
-
-        $hasTakozModel = new \App\Models\HasTakozModel();
+        // Modelleri yükle
+        $hurdaModel = new \App\Models\HurdaModel();
         $takozModel = new \App\Models\TakozModel();
 
-        // Veritabanındaki en büyük grup_kodu'nu al
-        $sonGrupKodu = (int) ($takozModel->selectMax('grup_kodu')->first()['grup_kodu'] ?? 0);
-        $groupCode = $sonGrupKodu + 1;
+        // Hurda verisini al
+        $hurda = $hurdaModel->find($hurdaId);
 
-        // Her takoz için yeni kayıt (sadece ağırlık bilgisi)
-        foreach ($takozlar as $t) {
+        if (!$hurda) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Hurda kaydı bulunamadı.'
+            ]);
+        }
+
+        if (!is_array($agirliklar) || count($agirliklar) != $adet) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Eksik veya hatalı ağırlık bilgisi.'
+            ]);
+        }
+
+        // Grup kodu oluştur (aynı grup altında olacaklar için)
+        //$grupKodu = strtoupper(random_string('alnum', 8));
+
+        // Her takoz için insert yap
+        foreach ($agirliklar as $agirlik) {
             $takozModel->insert([
-                'musteri'=>'HasTakoz',
-                'giris_gram' => $t['agirlik'],
-                'grup_kodu' => $groupCode,
-                'tahmini_milyem'=>9999,
-                'status_code'=>5
+                'musteri'      => $hurda['musteri'],
+                'giris_gram'      => $agirlik,
+                'tahmini_milyem'       => $hurda['tahmini_milyem'], // varsayım
+                'musteri_notu'  => $hurda['musteri_notu'],   // örnek alan
+                'status_code'  => 2,   // örnek alan
+                'hurda_grup_kodu' => $hurdaId,
             ]);
         }
 
-        // Seçilen id'lerin grup kodunu ve durumunu güncelle
-        foreach ($ids as $id) {
-            $takozModel->update($id, [
-                'grup_kodu' => $groupCode,
-                'status_code' => 4 // İşlendi olarak işaretle
-            ]);
-        }
+        // İstersen hurda kaydını güncelle (örn: grup_kodu ekle)
+        $hurdaModel->update($hurdaId, [
+            'status_code' => 3
+        ]);
 
-        return $this->response->setJSON(['success' => true]);
-    }
-
-    return $this->response->setJSON(['success' => false, 'error' => 'AJAX değil']);
-}
-
-
-public function hurdaTakozYap()
-{
-    $hurdaId = $this->request->getPost('hurda_id');
-    $adet = $this->request->getPost('adet');
-    $agirliklar = $this->request->getPost('takoz_agirlik');
-
-    // Modelleri yükle
-    $hurdaModel = new \App\Models\HurdaModel();
-    $takozModel = new \App\Models\TakozModel();
-
-    // Hurda verisini al
-    $hurda = $hurdaModel->find($hurdaId);
-
-    if (!$hurda) {
         return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Hurda kaydı bulunamadı.'
+            'success' => true,
+            'message' => $adet . ' adet takoz başarıyla eklendi.'
         ]);
     }
-
-    if (!is_array($agirliklar) || count($agirliklar) != $adet) {
-        return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Eksik veya hatalı ağırlık bilgisi.'
-        ]);
-    }
-
-    // Grup kodu oluştur (aynı grup altında olacaklar için)
-    //$grupKodu = strtoupper(random_string('alnum', 8));
-
-    // Her takoz için insert yap
-    foreach ($agirliklar as $agirlik) {
-        $takozModel->insert([
-            'musteri'      => $hurda['musteri'],
-            'giris_gram'      => $agirlik,
-            'tahmini_milyem'       => $hurda['tahmini_milyem'], // varsayım
-            'musteri_notu'  => $hurda['musteri_notu'],   // örnek alan
-            'status_code'  => 2,   // örnek alan
-            'hurda_grup_kodu' => $hurdaId,
-        ]);
-    }
-
-    // İstersen hurda kaydını güncelle (örn: grup_kodu ekle)
-    $hurdaModel->update($hurdaId, [
-        'status_code' => 3
-    ]);
-
-    return $this->response->setJSON([
-        'success' => true,
-        'message' => $adet . ' adet takoz başarıyla eklendi.'
-    ]);
-}
 
 
 
@@ -492,14 +492,14 @@ public function hurdaTakozYap()
 
     public function kasaHesap()
     {
-        
+
         $model = new TakozModel();
         $hurdamodel = new HurdaModel();
         // Tüm takozları veritabanından çek
-       $items = $model->where('status_code', 4)
-               ->where('hurda_grup_kodu <=', 0)
-               ->findAll();
-        $hurdalar=$hurdamodel->where('status_code', 1)->findAll();
+        $items = $model->where('status_code', 4)
+            ->where('hurda_grup_kodu <=', 0)
+            ->findAll();
+        $hurdalar = $hurdamodel->where('status_code', 1)->findAll();
 
         // Toplam gramajı hesapla
         $totalGram = array_sum(array_column($items, 'giris_gram'));
@@ -511,6 +511,87 @@ public function hurdaTakozYap()
             'hurdatotalGram' => $hurdatotalGram,
             'role' => session()->get('role'),
         ]);
-
     }
+
+
+
+    public function inceleCesni()
+    {
+        $data = $this->request->getJSON(true); // fetch ile JSON geldiği için
+        $id = $data['id'] ?? null;
+
+        if (!$id) {
+            return $this->response->setStatusCode(400)->setBody("Geçersiz ID.");
+        }
+
+        $cesniModel = new \App\Models\CesniModel();
+        $takozModel = new \App\Models\TakozModel();
+        $hurdaModel = new \App\Models\HurdaModel();
+        // 1. Seçilen çeşniyi bul
+        $cesni = $cesniModel->find($id);
+
+        if (!$cesni) {
+            return $this->response->setBody("Kayıt bulunamadı.");
+        }
+
+        // 2. Fis_no'dan takozu bul
+        $fisNo = $cesni['fis_no'];
+        $takoz = $takozModel->find($fisNo);
+
+        if (!$takoz) {
+            return $this->response->setBody("Takoz bilgisi bulunamadı.");
+        }
+
+        // 3. Grup kodunu al
+        $grupKodu = $takoz['grup_kodu'];
+
+
+        if ($takoz['status_code'] >= 5) {
+            // 4. Bu grup koduna sahip tüm takozları al (geçmiş hareketler)
+            $gecmis = $takozModel
+                ->where('grup_kodu', $grupKodu)
+                ->findAll();
+        } else {
+            $gecmis = [$takoz];
+        }
+        foreach ($gecmis as $t) {
+            if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
+                $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
+                if ($hurda) {
+                    // hurda verisini tamamlayalım
+                    $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
+                    $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
+                    $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
+                    $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
+                    $hurda['olculen_milyem'] = 0;
+                    $hurda['cesni_has'] = 0;
+                    $hurda['cesni_gram'] = 0;
+                    $hurda['islem_goren_miktar'] = 0;
+                    $hurda['grup_kodu'] = 0;
+                    $hurda['hurda_grup_kodu'] = 0;
+                    $hurda['cesni_id'] = 0;
+                    $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
+
+                    array_push($gecmis, $hurda);
+                }
+            }
+        }
+
+        usort($gecmis, function($a, $b) {
+    $aHurda = str_starts_with($a['id'], 'H-') ? 0 : 1;
+    $bHurda = str_starts_with($b['id'], 'H-') ? 0 : 1;
+    return $aHurda <=> $bHurda;
+});
+        // 5. Partial view döndür (incele_partial.php)
+        return view('incele_partial', [
+            'cesni' => $cesni,
+            'gecmis' => $gecmis
+        ]);
+    }
+
+
+
+
+
+    
 }

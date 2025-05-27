@@ -151,12 +151,8 @@
 	<div class="menu-block customscroll">
 		<div class="sidebar-menu">
 			<ul id="accordion-menu">
-<!--
-				<li>
-					<a href="<?= site_url('homepage') ?>" class="dropdown-toggle no-arrow">
-						<span class="micon bi bi-house"></span><span class="mtext">Anasayfa</span>
-					</a>
-				</li>
+				<!--
+			
 				<li>
 					<a href="<?= site_url('addcustomer') ?>" class="dropdown-toggle no-arrow">
 						<span class="micon bi bi-plus"></span><span class="mtext">Ekle</span>
@@ -176,11 +172,16 @@
 				</li>
 -->
 				<li>
+					<a href="<?= site_url('homepage') ?>" class="dropdown-toggle no-arrow">
+						<span class="micon bi bi-house"></span><span class="mtext">Anasayfa</span>
+					</a>
+				</li>
+				<li>
 					<a href="<?= site_url('addgold') ?>" class="dropdown-toggle no-arrow">
 						<span class="micon bi bi-plus"></span><span class="mtext">Külçe Ekle</span>
 					</a>
 				</li>
-					<?php if ($role == 1): ?>
+				<?php if ($role == 1): ?>
 					<li>
 						<a href="<?= site_url('kasaHesap') ?>" class="dropdown-toggle no-arrow">
 							<span class="micon bi bi-cash"></span><span class="mtext">Kasa Hesap</span>
@@ -194,7 +195,7 @@
 						</a>
 					</li>
 				<?php endif; ?>
-			
+
 			</ul>
 
 		</div>

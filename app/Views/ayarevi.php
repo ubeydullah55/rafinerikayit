@@ -89,13 +89,13 @@
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
-                                         <td>
+                                    <td>
                                         <?php
                                         $gram = !empty($item['islem_goren_miktar']) ? $item['islem_goren_miktar'] : $item['giris_gram'];
                                         echo number_format($gram * ($item['tahmini_milyem'] / 1000), 2);
                                         ?> gr
                                     </td>
-                                    <td><?= number_format(esc($item['islem_goren_miktar']),2); ?></td>
+                                    <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
@@ -208,7 +208,7 @@
 
 
 
- <div class="card-box mb-30">
+            <div class="card-box mb-30">
                 <div class="pd-20">
                     <h4 class="text-blue h4">HAS TAKOZLAR</h4>
                 </div>
@@ -216,13 +216,13 @@
                     <table
                         class="table hover multiple-select-row data-table-export nowrap">
 
-                            <thead>
+                        <thead>
                             <tr>
                                 <th>Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Tahmini Milyem</th>
-          
+
                                 <th class="table-plus datatable-nosort">İşlem Gören Miktar</th>
                                 <th class="table-plus datatable-nosort">Alınan Çeşni Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
@@ -242,7 +242,7 @@
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
-                                    <td><?= number_format(esc($item['islem_goren_miktar']),2); ?></td>
+                                    <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
@@ -286,7 +286,7 @@
 
 
 
-            
+
 
             <!--#region çeşniler  -->
 
@@ -327,7 +327,11 @@
                                                 <i class="dw dw-more"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                                <a class="dropdown-item" href="#"><i class="dw dw-eye"></i> İncele</a>
+                                                <a href="#" class="dropdown-item" onclick="inceleCesni(<?= $item['id'] ?>)">
+                                                    <i class="dw dw-eye"></i> İncele
+                                                </a>
+
+
                                                 <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
                                                 <a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Sil</a>
                                                 <?php if ($item['cesni_has'] ==  0): ?>
@@ -335,9 +339,11 @@
                                                         <i class="dw dw-brightness1"></i> Kalan Gram Gir
                                                     </a>
                                                 <?php endif; ?>
-                                                <a href="#" onclick="ilerletCesni(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
-                                                    <i class="dw dw-enter-1"></i> İlerlet
-                                                </a>
+                                                <?php if ($item['cesni_has'] !=  0): ?>
+                                                    <a href="#" onclick="ilerletCesni(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+                                                        <i class="dw dw-enter-1"></i> İlerlet
+                                                    </a>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </td>
@@ -460,6 +466,24 @@
             </form>
         </div>
     </div>
+</div>
+
+
+<!-- Çeşni İncele Modal -->
+<div class="modal fade" id="cesniInceleModal" tabindex="-1" role="dialog" aria-labelledby="cesniInceleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Çeşni Detayları</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="cesniInceleContent">
+        <div class="text-center">Yükleniyor...</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -752,6 +776,30 @@
 </script>
 
 
+<script>
+function inceleCesni(id) {
+    // Modalı aç
+    $('#cesniInceleModal').modal('show');
+    document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
+
+    fetch('<?= base_url('cesni/incele') ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ id: id })
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('cesniInceleContent').innerHTML = html;
+    })
+    .catch(error => {
+        console.error("Hata:", error);
+        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
+    });
+}
+</script>
 
 
 <?= view('include/footer') ?>
