@@ -577,11 +577,11 @@ class Home extends BaseController
             }
         }
 
-        usort($gecmis, function($a, $b) {
-    $aHurda = str_starts_with($a['id'], 'H-') ? 0 : 1;
-    $bHurda = str_starts_with($b['id'], 'H-') ? 0 : 1;
-    return $aHurda <=> $bHurda;
-});
+        usort($gecmis, function ($a, $b) {
+            $aHurda = str_starts_with($a['id'], 'H-') ? 0 : 1;
+            $bHurda = str_starts_with($b['id'], 'H-') ? 0 : 1;
+            return $aHurda <=> $bHurda;
+        });
         // 5. Partial view döndür (incele_partial.php)
         return view('incele_partial', [
             'cesni' => $cesni,
@@ -589,9 +589,95 @@ class Home extends BaseController
         ]);
     }
 
+    public function inceleTakoz()
+    {
+        $data = $this->request->getJSON(true); // fetch ile JSON geldiği için
+        $id = $data['id'] ?? null;
+
+        if (!$id) {
+            return $this->response->setStatusCode(400)->setBody("Geçersiz ID.");
+        }
+
+        $cesniModel = new \App\Models\CesniModel();
+        $takozModel = new \App\Models\TakozModel();
+        $hurdaModel = new \App\Models\HurdaModel();
+        // 1. Seçilen çeşniyi bul
+
+        $takoz = $takozModel->find($id);
 
 
+        if (!$takoz) {
+            return $this->response->setBody("Kayıt bulunamadı.");
+        }
+
+        // 2. Fis_no'dan takozu bul
 
 
-    
+        // 3. Grup kodunu al
+        $grupKodu = $takoz['grup_kodu'];
+
+
+        if ($takoz['status_code'] >= 5) {
+            // 4. Bu grup koduna sahip tüm takozları al (geçmiş hareketler)
+            $gecmis = $takozModel
+                ->where('grup_kodu', $grupKodu)
+                ->findAll();
+        } else {
+            $gecmis = [$takoz];
+        }
+
+        $sumStatus5 = $takozModel
+    ->selectSum('giris_gram', 'total_gram')
+    ->where('grup_kodu', $grupKodu)
+    ->where('status_code', 5)
+    ->first()['total_gram'] ?? 0;
+
+$sumStatus4 = $takozModel
+    ->selectSum('giris_gram', 'total_gram')
+    ->where('grup_kodu', $grupKodu)
+    ->where('status_code', 4)
+    ->first()['total_gram'] ?? 0;
+
+$reaktor_fire = $sumStatus4 - $sumStatus5;
+
+        $eritmeFire=0;
+        foreach ($gecmis as $t) {
+            if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
+                $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
+               
+                if ($hurda) {
+                      if (isset($t['giris_gram']) && isset($hurda['giris_gram'])) {
+                $eritmeFire += $hurda['giris_gram'] - $t['giris_gram'];
+            }
+                    // hurda verisini tamamlayalım
+                    $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
+                    $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
+                    $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
+                    $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
+                    $hurda['olculen_milyem'] = 0;
+                    $hurda['cesni_has'] = 0;
+                    $hurda['cesni_gram'] = 0;
+                    $hurda['islem_goren_miktar'] = 0;
+                    $hurda['grup_kodu'] = 0;
+                    $hurda['hurda_grup_kodu'] = 0;
+                    $hurda['cesni_id'] = 0;
+                    $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
+
+                    array_push($gecmis, $hurda);
+                }
+            }
+        }
+
+        usort($gecmis, function ($a, $b) {
+            $aHurda = str_starts_with($a['id'], 'H-') ? 0 : 1;
+            $bHurda = str_starts_with($b['id'], 'H-') ? 0 : 1;
+            return $aHurda <=> $bHurda;
+        });
+        // 5. Partial view döndür (incele_partial.php)
+        return view('incele_partial', [
+            'gecmis' => $gecmis,
+            'eritme_fire' =>$eritmeFire,
+            'reaktor_fire'=>$reaktor_fire
+        ]);
+    }
 }
