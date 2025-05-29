@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\CesniModel;
-use App\Models\HasTakozModel;
 use App\Models\HurdaModel;
 use App\Models\TakozModel;
 use CodeIgniter\Model;
@@ -45,7 +44,6 @@ class Home extends BaseController
         $model = new TakozModel();
         $modelcesni = new CesniModel();
         $hurdamodel = new HurdaModel();
-        $hastakozmodel = new HasTakozModel();
         $db = \Config\Database::connect();
 
 
@@ -389,7 +387,6 @@ class Home extends BaseController
                 return $this->response->setJSON(['success' => false, 'error' => 'Eksik veri gönderildi.']);
             }
 
-            $hasTakozModel = new \App\Models\HasTakozModel();
             $takozModel = new \App\Models\TakozModel();
 
             // Veritabanındaki en büyük grup_kodu'nu al
@@ -500,6 +497,7 @@ class Home extends BaseController
         // Tüm takozları veritabanından çek
         $items = $model->where('status_code', 4)
             ->where('hurda_grup_kodu <=', 0)
+            ->where('tur =', 0)
             ->findAll();
         $hurdalar = $hurdamodel->where('status_code', 1)->findAll();
 
@@ -619,7 +617,7 @@ class Home extends BaseController
         $grupKodu = $takoz['grup_kodu'];
 
 
-        if ($takoz['status_code'] >= 5) {
+        if ($takoz['tur'] != 1) {
             // 4. Bu grup koduna sahip tüm takozları al (geçmiş hareketler)
             $gecmis = $takozModel
                 ->where('grup_kodu', $grupKodu)
@@ -687,4 +685,57 @@ class Home extends BaseController
             'reaktor_fire'=>$reaktorFire
         ]);
     }
+
+
+  public function islenecek()
+    {
+        $model = new TakozModel();
+        $modelcesni = new CesniModel();
+        $db = \Config\Database::connect();
+
+        // status_code = 2 olan takozları al
+        $items = $model->where('status_code', 6)->findAll();
+
+        // status_code = 1 olan cesnilerle takozları joinleyelim
+        $builder = $db->table('cesni');
+        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem,takozlar.olculen_milyem,takozlar.cesni_has');
+        $builder->join('takozlar', 'cesni.fis_no = takozlar.id');
+        $builder->where('cesni.status_code', 1);
+
+        $cesnibilgi = $builder->get()->getResultArray();
+
+        // Gram toplamlarını hesapla
+        $totalGram = 0;
+
+        foreach ($items as $item) {
+            if ($item['islem_goren_miktar'] > 0) {
+                $totalGram += $item['islem_goren_miktar'];
+            } else {
+                $totalGram += $item['giris_gram'];
+            }
+        }
+
+
+        $totalCesniGram = 0;
+
+        foreach ($cesnibilgi as $item) {
+            if ($item['cesni_has'] > 0) {
+                $totalCesniGram += $item['cesni_has'];
+            } else {
+                $totalCesniGram += $item['agirlik'];
+            }
+        }
+
+
+
+        return view('islenecek', [
+            'items' => $items,
+            'totalGram' => $totalGram,
+            'role' => session()->get('role'),
+            'cesnibilgi' => $cesnibilgi,
+            'totalCesni' => $totalCesniGram,
+        ]);
+    }
+
+
 }

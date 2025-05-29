@@ -52,6 +52,7 @@
                                 <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
                                 <th class="table-plus datatable-nosort">Müşteri Notu</th>
                                 <th class="table-plus datatable-nosort">Ölçüm Has</th>
+                                <th class="table-plus datatable-nosort">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,6 +74,20 @@
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
                                     <td><?= number_format($item['giris_gram'] * ($item['olculen_milyem'] / 1000), 2); ?> gr</td>
+                                    	<td>
+										<div class="dropdown">
+											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+												<i class="dw dw-more"></i>
+											</a>
+											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+												 <a href="#" class="dropdown-item" onclick="inceleTakoz(<?= $item['id'] ?>)">
+                                                    <i class="dw dw-eye"></i> İncele
+                                                </a>
+												<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Hesapla</a>
+												
+											</div>
+										</div>
+									</td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -103,164 +118,63 @@
     </div>
 </div>
 <!-- Çeşni Modalı -->
-<div class="modal fade" id="cesniModal" tabindex="-1" role="dialog" aria-labelledby="cesniModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="cesniForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cesniModalLabel">Çeşni Miktarı Gir</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="cesniId" name="id">
-                    <div class="form-group">
-                        <label for="cesniGram">Çeşni Gramı</label>
-                        <input type="number" step="0.001" min="0" class="form-control" id="cesniGram" name="cesni_gram" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Ekle</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<div class="modal fade" id="kalancesniModal" tabindex="-1" role="dialog" aria-labelledby="kalancesniModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="kalancesniForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="kalancesniModalLabel">Çeşni Miktarı Gir</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="cesniId" name="id">
-                    <div class="form-group">
-                        <label for="cesniGram">Kalan Çeşni Gramı</label>
-                        <input type="number" step="0.001" min="0" class="form-control" id="kalancesniGram" name="kalan_cesni_gram" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Ekle</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
-                </div>
-            </form>
-        </div>
+
+
+
+
+
+<!-- Çeşni İncele Modal -->
+<div class="modal fade" id="cesniInceleModal" tabindex="-1" role="dialog" aria-labelledby="cesniInceleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">iŞLEM GEÇMİŞ DETAYLARI</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="cesniInceleContent">
+        <div class="text-center">Yükleniyor...</div>
+      </div>
     </div>
+  </div>
 </div>
 
 
 
-<!-- Sadece ağırlık alanları olacak -->
-<div class="modal fade" id="uretTakozModal" tabindex="-1" role="dialog" aria-labelledby="uretTakozModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <form id="uretTakozForm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Yeni Takoz Üret</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="uret_takoz_ids" name="ids[]">
 
-                    <div class="form-group">
-                        <label for="uret_adet">Üretilecek Takoz Adedi</label>
-                        <input type="number" min="1" class="form-control" id="uret_adet" required>
-                    </div>
 
-                    <div id="uret_takoz_inputlari"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Kaydet</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+
+
+
 
 
 
 <script>
-    // Modal açıldığında: ID'leri al ve modalı göster
-    document.getElementById('erit-button').addEventListener('click', function() {
-        const selectedIds = Array.from(document.querySelectorAll('.select-row:checked')).map(cb => cb.value);
+function inceleTakoz(id) {
+    // Modalı aç
+    $('#cesniInceleModal').modal('show');
+    document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
 
-        if (selectedIds.length === 0) {
-            alert('Lütfen en az bir takoz seçin.');
-            return;
-        }
-
-        document.getElementById('uret_takoz_ids').value = selectedIds.join(',');
-        document.getElementById('uret_adet').value = '';
-        document.getElementById('uret_takoz_inputlari').innerHTML = '';
-        $('#uretTakozModal').modal('show');
+    fetch('<?= base_url('takoz/incele') ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ id: id })
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('cesniInceleContent').innerHTML = html;
+    })
+    .catch(error => {
+        console.error("Hata:", error);
+        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
     });
-
-    // Adet girilince sadece ağırlık inputları oluştur
-    document.getElementById('uret_adet').addEventListener('input', function() {
-        const adet = parseInt(this.value);
-        const container = document.getElementById('uret_takoz_inputlari');
-        container.innerHTML = '';
-
-        if (adet > 0) {
-            for (let i = 1; i <= adet; i++) {
-                container.innerHTML += `
-        <div class="form-group">
-          <label>${i}. Takoz Ağırlığı (gr)</label>
-          <input type="number" name="agirlik[]" step="0.01" class="form-control" required>
-        </div>
-      `;
-            }
-        }
-    });
-
-    // Form submit: sadece ID'ler ve ağırlıklar JSON olarak gönderilir
-    document.getElementById('uretTakozForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const form = e.target;
-        const ids = document.getElementById('uret_takoz_ids').value.split(',');
-        const agirliklar = Array.from(form.querySelectorAll('input[name="agirlik[]"]')).map(i => i.value);
-
-        const takozlar = agirliklar.map(a => ({
-            agirlik: a
-        }));
-
-        fetch("<?= base_url('home/uretTakoz') ?>", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-                ids: ids,
-                takozlar: takozlar
-            })
-        }).then(res => res.json()).then(data => {
-            if (data.success) {
-                alert("Takozlar başarıyla üretildi!");
-                $('#uretTakozModal').modal('hide');
-                location.reload();
-            } else {
-                alert("Bir hata oluştu: " + data.error);
-            }
-        }).catch(err => {
-            console.error(err);
-            alert("Sunucu hatası.");
-        });
-    });
+}
 </script>
-
-
-
 
 
 

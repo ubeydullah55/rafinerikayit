@@ -60,7 +60,7 @@
 
             <div class="card-box mb-30">
                 <div class="pd-20">
-                    <h4 class="text-blue h4">REAKTÖR</h4>
+                    <h4 class="text-blue h4">ERİTME</h4>
                 </div>
                 <div class="pb-20">
                     <table
@@ -117,7 +117,7 @@
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
                                 <td style="font-weight:bold;"><?= number_format($totalGram, 2); ?> gr</td>
                                 <td colspan="3"><button type="button" id="erit-button" class="btn btn-success">
-                                        Reaktöre At
+                                        ERİT
                                     </button></td>
                             </tr>
 
@@ -177,12 +177,12 @@
         </div>
 
         <div class="form-group text-center">
-            <label>Nitrik Asit(HNO3):</label>
+            <label>Asit 1 Miktarı (gr):</label>
             <div id="asit1_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
         </div>
 
         <div class="form-group text-center">
-            <label>HidroKlorik Asit(Hcl):</label>
+            <label>Asit 2 Miktarı (gr):</label>
             <div id="asit2_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
         </div>
     </div>

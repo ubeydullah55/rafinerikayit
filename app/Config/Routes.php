@@ -55,3 +55,5 @@ $routes->post('cesni/incele', 'Home::inceleCesni');
 
 
 $routes->post('takoz/incele', 'Home::inceleTakoz');
+
+$routes->get('home/islenecek', 'Home::islenecek');

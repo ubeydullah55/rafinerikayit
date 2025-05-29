@@ -20,13 +20,16 @@
 					<div class="col-md-6 col-sm-12">
 						<div class="title">
 							<h4>MAL KABUL</h4>
-							  <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
-                                Ayar Evi
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
-                                İfraz
-                            </button>
+							<button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
+							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
+								Ayar Evi
+							</button>
+							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
+								İfraz
+							</button>
+							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
+								İşlenecek
+							</button>
 						</div>
 						<nav aria-label="breadcrumb" role="navigation">
 							<ol class="breadcrumb">
@@ -94,12 +97,22 @@
 												<i class="dw dw-more"></i>
 											</a>
 											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-												<a class="dropdown-item" href="#"><i class="dw dw-eye"></i> İncele</a>
-												<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
-												<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Sil</a>
 												<a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
 													<i class="dw dw-enter-1"></i> İlerlet
 												</a>
+												<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
+												<a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Sil</a>
+
+												<a href="#" onclick="yazdirTakoz(
+    <?= $item['id']; ?>,
+    '<?= esc($item['musteri']); ?>',
+    <?= number_format((float)$item['giris_gram'], 2, '.', ''); ?>,
+    '<?= esc($item['tahmini_milyem']); ?>',
+    '<?= esc($item['musteri_notu']) ?: '-'; ?>'
+)" class="dropdown-item">
+													<i class="dw dw-print"></i> Fiş Yazdır
+												</a>
+
 											</div>
 										</div>
 									</td>
@@ -420,6 +433,77 @@
 		window.location.href = '<?= base_url("customerview/"); ?>' + id;
 	}
 </script>
+
+
+<script>
+function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu) {
+    var printWindow = window.open('', '', 'width=300,height=600');
+
+    var icerik = `
+        <html>
+        <head>
+            <title>Fiş Yazdır</title>
+            <style>
+                @media print {
+                    @page {
+                        size: 58mm auto;
+                        margin: 0;
+                    }
+                    body {
+                        margin: 0;
+                        font-family: monospace;
+                        font-size: 12px;
+                        width: 58mm;
+                    }
+                }
+
+                body {
+                    font-family: monospace;
+                    padding: 10px;
+                }
+
+                .fis {
+                    text-align: center;
+                    border-top: 1px dashed #000;
+                    border-bottom: 1px dashed #000;
+                    padding: 10px 0;
+                }
+
+                .fis p {
+                    margin: 4px 0;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="fis">
+                <p><strong>SAMSUN ALTIN RAFİNERİ</strong></p>
+				<p><strong>Altın Takoz Fişi</strong></p>
+                <p><strong>ID:</strong> ${id}</p>
+                <p><strong>Müşteri:</strong> ${musteri}</p>
+                <p><strong>Gramaj:</strong> ${girisGram} gr</p>
+                <p><strong>Tahmini Milyem:</strong> ${tahminiMilyem}</p>
+                <p><strong>Not:</strong> ${musteriNotu}</p>
+                <p><strong>Tarih:</strong> ${new Date().toLocaleString()}</p>
+            </div>
+            <script>
+                window.addEventListener('afterprint', function() {
+                    window.close();
+                });
+                window.onload = function() {
+                    window.print();
+                }
+            <\/script>
+        </body>
+        </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(icerik);
+    printWindow.document.close();
+}
+</script>
+
+
 
 
 <?= view('include/footer') ?>
