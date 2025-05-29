@@ -84,7 +84,7 @@ class Home extends BaseController
 
         foreach ($cesnibilgi as $item) {
             if ($item['cesni_has'] > 0) {
-                $totalCesniGram += $item['cesni_has'];
+                $totalCesniGram += $item['cesni_has']+$item['kullanilan'];
             } else {
                 $totalCesniGram += $item['agirlik'];
             }
@@ -219,10 +219,16 @@ class Home extends BaseController
             $input = $this->request->getJSON(true);
 
             $id = $input['id']; // takoz ID
+            $tableid = $input['tableid']; // çeşniid
+            $kullanilanCesni = floatval($input['kullanilan_gram']);
             $kalanHasCesni = floatval($input['cesni_gram']);
 
             $model = new \App\Models\TakozModel();
             $record = $model->find($id);
+            $modelCesni = new \App\Models\CesniModel();
+            $modelCesni->update($tableid, [
+                'kullanilan' => $kullanilanCesni
+            ]);
 
             if (!$record) {
                 return $this->response->setJSON(['success' => false, 'message' => 'Kayıt bulunamadı']);
@@ -235,7 +241,7 @@ class Home extends BaseController
             // Yeni değerleri hesapla
 
 
-            $olculenMilyem = ($kalanHasCesni / $mevcutCesniGram) * 1000;
+            $olculenMilyem = ($kalanHasCesni / $kullanilanCesni) * 1000;
             // Güncelleme yap
             $updateSuccess = $model->update($id, [
                 'cesni_has' => $kalanHasCesni,

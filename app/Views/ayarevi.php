@@ -27,8 +27,8 @@
                             <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
                                 İfraz
                             </button>
-                             <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
-                               İşlenecek
+                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
+                                İşlenecek
                             </button>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
@@ -255,7 +255,7 @@
                                                 <i class="dw dw-more"></i>
                                             </a>
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                                 <a href="#" class="dropdown-item" onclick="inceleTakoz(<?= $item['id'] ?>)">
+                                                <a href="#" class="dropdown-item" onclick="inceleTakoz(<?= $item['id'] ?>)">
                                                     <i class="dw dw-eye"></i> İncele
                                                 </a>
                                                 <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
@@ -307,9 +307,12 @@
                             <tr>
                                 <th>Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
-                                <th class="table-plus datatable-nosort">Alınan Çeşni Ağırlığı</th>
-                                <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
+                                <th class="table-plus datatable-nosort">Alınan Toplam Çeşni Ağırlığı</th>
+                                <th class="table-plus datatable-nosort">İşlem Görmeyen</th>
                                 <th class="table-plus datatable-nosort">Kalan Has Çeşni</th>
+                                <th class="table-plus datatable-nosort">Poşet Toplam Çeşni</th>
+                                <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
+
                                 <th class="table-plus datatable-nosort">Action</th>
                             </tr>
                         </thead>
@@ -324,8 +327,16 @@
                                     <td><?= esc($item['fis_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= esc($item['agirlik']); ?></td>
-                                    <td><?= esc($item['olculen_milyem']); ?></td>
+                                    <td>
+                                        <?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>
+                                    </td>
+                                    
                                     <td><?= esc($item['cesni_has']); ?></td>
+                                      <td>
+                                        <?= esc($item['cesni_has'] + ($item['kullanilan'] ?? 0)); ?>
+                                    </td>
+                                    <td><?= esc($item['olculen_milyem']); ?></td>
+
                                     <td>
                                         <div class="dropdown">
                                             <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -340,7 +351,7 @@
                                                 <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
                                                 <a class="dropdown-item" href="#"><i class="dw dw-delete-3"></i> Sil</a>
                                                 <?php if ($item['cesni_has'] ==  0): ?>
-                                                    <a href="#" class="dropdown-item" onclick="openKalanCesniModal(<?= $item['fis_no']; ?>)">
+                                                    <a href="#" class="dropdown-item" onclick="openKalanCesniModal(<?= $item['fis_no']; ?>, <?= $item['id']; ?>)">
                                                         <i class="dw dw-brightness1"></i> Kalan Gram Gir
                                                     </a>
                                                 <?php endif; ?>
@@ -459,6 +470,11 @@
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="cesniId" name="id">
+                    <input type="hidden" id="tableId" name="tableid">
+                    <div class="form-group">
+                        <label for="kullanilancesniGram">Kullanılan Çeşni Gramı</label>
+                        <input type="number" step="0.001" min="0" class="form-control" id="kullanilancesniGram" name="kullanilan_cesni_gram" required>
+                    </div>
                     <div class="form-group">
                         <label for="cesniGram">Kalan Çeşni Gramı</label>
                         <input type="number" step="0.001" min="0" class="form-control" id="kalancesniGram" name="kalan_cesni_gram" required>
@@ -476,36 +492,36 @@
 
 <!-- Çeşni İncele Modal -->
 <div class="modal fade" id="cesniInceleModal" tabindex="-1" role="dialog" aria-labelledby="cesniInceleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">iŞLEM GEÇMİŞ DETAYLARI</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="cesniInceleContent">
-        <div class="text-center">Yükleniyor...</div>
-      </div>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">iŞLEM GEÇMİŞ DETAYLARI</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="cesniInceleContent">
+                <div class="text-center">Yükleniyor...</div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
 <div class="modal fade" id="takozInceleModal" tabindex="-1" role="dialog" aria-labelledby="takozInceleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Takoz Detayları</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="cesniInceleContent">
-        <div class="text-center">Yükleniyor...</div>
-      </div>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Takoz Detayları</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="cesniInceleContent">
+                <div class="text-center">Yükleniyor...</div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
@@ -564,9 +580,11 @@
 
 
 <script>
-    function openKalanCesniModal(id) {
+    function openKalanCesniModal(id, tableId) {
         document.getElementById('cesniId').value = id;
+        document.getElementById('tableId').value = tableId;
         document.getElementById('cesniGram').value = '';
+        document.getElementById('kullanilancesniGram').value = '';
         $('#kalancesniModal').modal('show');
     }
 
@@ -574,6 +592,8 @@
         e.preventDefault();
 
         const id = document.getElementById('cesniId').value;
+        const tableId = document.getElementById('tableId').value;
+        const kullanilangram = parseFloat(document.getElementById('kullanilancesniGram').value);
         const gram = parseFloat(document.getElementById('kalancesniGram').value);
 
         if (!gram || gram <= 0) {
@@ -589,6 +609,8 @@
                 },
                 body: JSON.stringify({
                     id: id,
+                    tableid: tableId,
+                    kullanilan_gram: kullanilangram,
                     cesni_gram: gram
                 })
             })
@@ -799,55 +821,59 @@
 
 
 <script>
-function inceleCesni(id) {
-    // Modalı aç
-    $('#cesniInceleModal').modal('show');
-    document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
+    function inceleCesni(id) {
+        // Modalı aç
+        $('#cesniInceleModal').modal('show');
+        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
 
-    fetch('<?= base_url('cesni/incele') ?>', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({ id: id })
-    })
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('cesniInceleContent').innerHTML = html;
-    })
-    .catch(error => {
-        console.error("Hata:", error);
-        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
-    });
-}
+        fetch('<?= base_url('cesni/incele') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('cesniInceleContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error("Hata:", error);
+                document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
+            });
+    }
 </script>
 
 
 
 <script>
-function inceleTakoz(id) {
-    // Modalı aç
-    $('#cesniInceleModal').modal('show');
-    document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
+    function inceleTakoz(id) {
+        // Modalı aç
+        $('#cesniInceleModal').modal('show');
+        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
 
-    fetch('<?= base_url('takoz/incele') ?>', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({ id: id })
-    })
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('cesniInceleContent').innerHTML = html;
-    })
-    .catch(error => {
-        console.error("Hata:", error);
-        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
-    });
-}
+        fetch('<?= base_url('takoz/incele') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('cesniInceleContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error("Hata:", error);
+                document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
+            });
+    }
 </script>
 
 
