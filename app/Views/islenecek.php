@@ -91,7 +91,7 @@
                             <?php foreach ($items as $item): ?>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * ($item['tahmini_milyem'] / 1000) ?>">
+                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * ($item['olculen_milyem'] / 1000) ?>"  milyem="<?= $item['olculen_milyem']; ?>">
                                     </td>
 
                                     <td><?= esc($item['id']); ?></td>
@@ -177,12 +177,12 @@
         </div>
 
         <div class="form-group text-center">
-            <label>Asit 1 Miktarı (gr):</label>
+            <label>995 İçin Gümüş Miktaı (gr):</label>
             <div id="asit1_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
         </div>
 
         <div class="form-group text-center">
-            <label>Asit 2 Miktarı (gr):</label>
+            <label>916 İçin Gümüş Miktarı (gr):</label>
             <div id="asit2_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
         </div>
     </div>
@@ -226,9 +226,13 @@
 
         // Seçilen takozların toplam ağırlığını hesapla
         let toplamAgirlik = 0;
-
+        let paketGumus=0;
+        let bilezikGumus=0;
         document.querySelectorAll('.select-row:checked').forEach(cb => {
             const agirlik = parseFloat(cb.getAttribute('data-agirlik')) || 0;
+            const milyem = parseFloat(cb.getAttribute('milyem')) || 0;
+            paketGumus+=((agirlik*milyem)/995)-agirlik;
+            bilezikGumus+=((agirlik*milyem)/916)-agirlik;
             toplamAgirlik += agirlik;
         });
 
@@ -237,8 +241,8 @@
 
         // Label gibi görünen alanlara yaz
         document.getElementById('toplam_agirlik').textContent = toplamAgirlik.toFixed(2) + ' gr';
-        document.getElementById('asit1_miktar').textContent = asit1.toFixed(2) + ' gr';
-        document.getElementById('asit2_miktar').textContent = asit2.toFixed(2) + ' gr';
+        document.getElementById('asit1_miktar').textContent = paketGumus.toFixed(2) + ' gr';
+        document.getElementById('asit2_miktar').textContent = bilezikGumus.toFixed(2) + ' gr';
 
 
         $('#uretTakozModal').modal('show');
