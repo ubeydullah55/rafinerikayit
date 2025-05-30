@@ -473,11 +473,11 @@
                     <input type="hidden" id="tableId" name="tableid">
                     <div class="form-group">
                         <label for="kullanilancesniGram">Kullanılan Çeşni Gramı</label>
-                        <input type="number" step="0.001" min="0" class="form-control" id="kullanilancesniGram" name="kullanilan_cesni_gram" required>
+                        <input type="number" step="0.0001" min="0" class="form-control" id="kullanilancesniGram" name="kullanilan_cesni_gram" required>
                     </div>
                     <div class="form-group">
                         <label for="cesniGram">Kalan Çeşni Gramı</label>
-                        <input type="number" step="0.001" min="0" class="form-control" id="kalancesniGram" name="kalan_cesni_gram" required>
+                        <input type="number" step="0.0001" min="0" class="form-control" id="kalancesniGram" name="kalan_cesni_gram" required>
                     </div>
                 </div>
                 <div class="modal-footer">
