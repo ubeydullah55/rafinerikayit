@@ -84,7 +84,7 @@ class Home extends BaseController
 
         foreach ($cesnibilgi as $item) {
             if ($item['cesni_has'] > 0) {
-                $totalCesniGram += $item['cesni_has']+$item['kullanilan'];
+                $totalCesniGram += $item['cesni_has'] + ($item['agirlik']-$item['kullanilan']);
             } else {
                 $totalCesniGram += $item['agirlik'];
             }
@@ -345,18 +345,18 @@ class Home extends BaseController
                 if ($fisNo) {
                     // Aynı fis_no'ya ait kayıtları bul
                     $cesniData = $takozmodel->where('id', $fisNo)->first();
-                    $ortalamaCesniHas=((($current['agirlik']-$current['kullanilan']) *$cesniData['olculen_milyem'])/1000)+$cesniData['cesni_has'];
+                    $ortalamaCesniHas = ((($current['agirlik'] - $current['kullanilan']) * $cesniData['olculen_milyem']) / 1000) + $cesniData['cesni_has'];
                     if ($cesniData) {
                         $takozmodel->insert([
                             'musteri'            => $cesniData['musteri'] . ' ÇEŞNİ',
                             'giris_gram'         => $ortalamaCesniHas,
-                            'islem_goren_miktar'         =>$ortalamaCesniHas,
+                            'islem_goren_miktar'         => $ortalamaCesniHas,
                             'tahmini_milyem'     => 999.9,
                             'status_code'        => 3,
                             'olculen_milyem'     => 999.9,
                             'musteri_notu'       => $cesniData['musteri_notu'],
                             'cesni_id'           => $id,
-                            'tur'=>1 //çeşni olarak eklendi
+                            'tur' => 1 //çeşni olarak eklendi
                         ]);
                     }
                 }
@@ -407,7 +407,7 @@ class Home extends BaseController
                     'grup_kodu' => $groupCode,
                     'tahmini_milyem' => 999.9,
                     'status_code' => 5,
-                    'tur'=>2 //hastakoz olarak eklendi
+                    'tur' => 2 //hastakoz olarak eklendi
                 ]);
             }
 
@@ -634,32 +634,38 @@ class Home extends BaseController
 
 
 
-        $reaktorFire=0;
-        $eldekiToplamHas=0;
-        $cikanHasTakoz=0;
+        $reaktorFire = 0;
+        $eldekiToplamHas = 0;
+        $cikanHasTakoz = 0;
         foreach ($gecmis as $t) {
-          if($t['tur']==0){
-            $eldekiToplamHas+=($t['islem_goren_miktar']*$t['olculen_milyem'])/1000;
-          }
-           if($t['tur']==1){
-            $eldekiToplamHas+=$t['giris_gram'];
-          }
-          if($t['tur']==2)
-          {
-            $cikanHasTakoz+=$t['giris_gram'];
-          }
+            if ($t['tur'] == 0) {
+                $eldekiToplamHas += ($t['islem_goren_miktar'] * $t['olculen_milyem']) / 1000;
+            }
+            if ($t['tur'] == 1) {
+                $eldekiToplamHas += $t['giris_gram'];
+            }
+            if ($t['tur'] == 2) {
+                $cikanHasTakoz += $t['giris_gram'];
+            }
         }
-        $reaktorFire=$eldekiToplamHas -$cikanHasTakoz;
+        $reaktorFire = $eldekiToplamHas - $cikanHasTakoz;
 
-        $eritmeFire=0;
+        $eritmeFire = 0;
+        $cacheHurdaGrupKodu=0;
+        $toplamHurda=0;
+        $toplamTakoz=0;
         foreach ($gecmis as $t) {
             if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
                 $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
-               
+
                 if ($hurda) {
-                      if (isset($t['giris_gram']) && isset($hurda['giris_gram'])) {
-                $eritmeFire += $hurda['giris_gram'] - $t['giris_gram'];
-            }
+                    if($cacheHurdaGrupKodu!=$t['hurda_grup_kodu']){
+                        $toplamHurda+=$hurda['giris_gram'];
+                        $cacheHurdaGrupKodu=$t['hurda_grup_kodu'];
+                    }
+                    if (isset($t['giris_gram']) && isset($hurda['giris_gram'])) {
+                        $toplamTakoz += $t['giris_gram'];
+                    }
                     // hurda verisini tamamlayalım
                     $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
                     $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
@@ -678,6 +684,7 @@ class Home extends BaseController
                 }
             }
         }
+        $eritmeFire=$toplamHurda- $toplamTakoz;
 
         usort($gecmis, function ($a, $b) {
             $aHurda = str_starts_with($a['id'], 'H-') ? 0 : 1;
@@ -687,13 +694,13 @@ class Home extends BaseController
         // 5. Partial view döndür (incele_partial.php)
         return view('incele_partial', [
             'gecmis' => $gecmis,
-            'eritme_fire' =>$eritmeFire,
-            'reaktor_fire'=>$reaktorFire
+            'eritme_fire' => $eritmeFire,
+            'reaktor_fire' => $reaktorFire
         ]);
     }
 
 
-  public function islenecek()
+    public function islenecek()
     {
         $model = new TakozModel();
         $modelcesni = new CesniModel();
@@ -742,6 +749,4 @@ class Home extends BaseController
             'totalCesni' => $totalCesniGram,
         ]);
     }
-
-
 }
