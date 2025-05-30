@@ -345,12 +345,12 @@ class Home extends BaseController
                 if ($fisNo) {
                     // Aynı fis_no'ya ait kayıtları bul
                     $cesniData = $takozmodel->where('id', $fisNo)->first();
-
+                    $ortalamaCesniHas=((($current['agirlik']-$current['kullanilan']) *$cesniData['olculen_milyem'])/1000)+$cesniData['cesni_has'];
                     if ($cesniData) {
                         $takozmodel->insert([
                             'musteri'            => $cesniData['musteri'] . ' ÇEŞNİ',
-                            'giris_gram'         => $cesniData['cesni_has'],
-                            'islem_goren_miktar'         => $cesniData['cesni_has'],
+                            'giris_gram'         => $ortalamaCesniHas,
+                            'islem_goren_miktar'         =>$ortalamaCesniHas,
                             'tahmini_milyem'     => 999.9,
                             'status_code'        => 3,
                             'olculen_milyem'     => 999.9,

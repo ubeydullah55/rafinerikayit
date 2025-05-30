@@ -333,7 +333,7 @@
                                     
                                     <td><?= esc($item['cesni_has']); ?></td>
                                       <td>
-                                        <?= esc($item['cesni_has'] + ($item['kullanilan'] ?? 0)); ?>
+                                        <?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>
                                     </td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
 
