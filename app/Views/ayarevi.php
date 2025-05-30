@@ -264,7 +264,7 @@
                                                         <i class="dw dw-brightness1"></i> Çeşni Al
                                                     </a>
                                                 <?php endif; ?>
-                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0): ?>
+                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0 && $item['olculen_milyem'] != 0): ?>
                                                     <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
                                                         <i class="dw dw-enter-1"></i> İlerlet
                                                     </a>

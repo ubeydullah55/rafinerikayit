@@ -84,7 +84,7 @@ class Home extends BaseController
 
         foreach ($cesnibilgi as $item) {
             if ($item['cesni_has'] > 0) {
-                $totalCesniGram += $item['cesni_has'] + ($item['agirlik']-$item['kullanilan']);
+                $totalCesniGram += $item['cesni_has'] + ($item['agirlik'] - $item['kullanilan']);
             } else {
                 $totalCesniGram += $item['agirlik'];
             }
@@ -651,40 +651,40 @@ class Home extends BaseController
         $reaktorFire = $eldekiToplamHas - $cikanHasTakoz;
 
         $eritmeFire = 0;
-        $cacheHurdaGrupKodu=0;
-        $toplamHurda=0;
-        $toplamTakoz=0;
+        $cacheHurdaGrupKodu = 0;
+        $toplamHurda = 0;
+        $toplamTakoz = 0;
         foreach ($gecmis as $t) {
             if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
                 $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
 
                 if ($hurda) {
-                    if($cacheHurdaGrupKodu!=$t['hurda_grup_kodu']){
-                        $toplamHurda+=$hurda['giris_gram'];
-                        $cacheHurdaGrupKodu=$t['hurda_grup_kodu'];
+                    if ($cacheHurdaGrupKodu != $t['hurda_grup_kodu']) {
+                        $toplamHurda += $hurda['giris_gram'];
+                        $cacheHurdaGrupKodu = $t['hurda_grup_kodu'];
+                        // hurda verisini tamamlayalım
+                        $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
+                        $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
+                        $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
+                        $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
+                        $hurda['olculen_milyem'] = 0;
+                        $hurda['cesni_has'] = 0;
+                        $hurda['cesni_gram'] = 0;
+                        $hurda['islem_goren_miktar'] = 0;
+                        $hurda['grup_kodu'] = 0;
+                        $hurda['hurda_grup_kodu'] = 0;
+                        $hurda['cesni_id'] = 0;
+                        $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
+
+                        array_push($gecmis, $hurda);
                     }
                     if (isset($t['giris_gram']) && isset($hurda['giris_gram'])) {
                         $toplamTakoz += $t['giris_gram'];
                     }
-                    // hurda verisini tamamlayalım
-                    $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
-                    $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
-                    $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
-                    $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
-                    $hurda['olculen_milyem'] = 0;
-                    $hurda['cesni_has'] = 0;
-                    $hurda['cesni_gram'] = 0;
-                    $hurda['islem_goren_miktar'] = 0;
-                    $hurda['grup_kodu'] = 0;
-                    $hurda['hurda_grup_kodu'] = 0;
-                    $hurda['cesni_id'] = 0;
-                    $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
-
-                    array_push($gecmis, $hurda);
                 }
             }
         }
-        $eritmeFire=$toplamHurda- $toplamTakoz;
+        $eritmeFire = $toplamHurda - $toplamTakoz;
 
         usort($gecmis, function ($a, $b) {
             $aHurda = str_starts_with($a['id'], 'H-') ? 0 : 1;
