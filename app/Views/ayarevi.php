@@ -330,9 +330,9 @@
                                     <td>
                                         <?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>
                                     </td>
-                                    
+
                                     <td><?= esc($item['cesni_has']); ?></td>
-                                      <td>
+                                    <td>
                                         <?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>
                                     </td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
@@ -360,6 +360,20 @@
                                                         <i class="dw dw-enter-1"></i> İlerlet
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php if ($item['cesni_has'] != 0): ?>
+                                                    <a href="#"
+                                                        class="dropdown-item yazdir-btn"
+                                                        data-id="<?= $item['id']; ?>"
+                                                        data-fis="<?= esc($item['fis_no']); ?>"
+                                                        data-islem-gormeyen="<?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>"
+                                                        data-has="<?= esc($item['cesni_has']); ?>"
+                                                        data-total="<?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>"
+                                                        data-musteri="<?= esc($item['musteri']); ?>">
+                                                        <i class="dw dw-print"></i> Yazdır
+                                                    </a>
+                                                <?php endif; ?>
+
+
                                             </div>
                                         </div>
                                     </td>
@@ -875,6 +889,88 @@
             });
     }
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".yazdir-btn").forEach(function(btn) {
+            btn.addEventListener("click", function(e) {
+                e.preventDefault();
+
+                const id = btn.dataset.id;
+                const fis = btn.dataset.fis;
+                const islemGormeyen = btn.dataset.islemGormeyen;
+                const has = btn.dataset.has;
+                const total = btn.dataset.total;
+                const musteri = btn.dataset.musteri;
+
+                const printWindow = window.open('', '', 'width=300,height=600');
+
+                const icerik = `
+                <html>
+                <head>
+                    <title>Çeşni Yazdır</title>
+                    <style>
+                        @media print {
+                            @page {
+                                size: 58mm auto;
+                                margin: 0;
+                            }
+                            body {
+                                margin: 0;
+                                font-family: monospace;
+                                font-size: 12px;
+                                width: 58mm;
+                            }
+                        }
+
+                        body {
+                            font-family: monospace;
+                            padding: 10px;
+                        }
+
+                        .fis {
+                            text-align: center;
+                            border-top: 1px dashed #000;
+                            border-bottom: 1px dashed #000;
+                            padding: 10px 0;
+                        }
+
+                        .fis p {
+                            margin: 4px 0;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="fis">
+                        <p><strong>SAMSUN ALTIN RAFİNERİ</strong></p>
+                        <p><strong>Çeşni Poşeti Fişi</strong></p>
+                        <p><strong>Fiş No:</strong> ${fis}</p>
+                        <p><strong>Müşteri:</strong> ${musteri}</p>
+                        <p><strong>İşlem Görmeyen:</strong> ${islemGormeyen} gr</p>
+                        <p><strong>Has:</strong> ${has} gr</p>
+                        <p><strong>Toplam:</strong> ${total} gr</p>
+                        <p><strong>Tarih:</strong> ${new Date().toLocaleString()}</p>
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                        };
+                        window.addEventListener('afterprint', function() {
+                            window.close();
+                        });
+                    <\/script>
+                </body>
+                </html>
+            `;
+
+                printWindow.document.open();
+                printWindow.document.write(icerik);
+                printWindow.document.close();
+            });
+        });
+    });
+</script>
+
 
 
 <?= view('include/footer') ?>
