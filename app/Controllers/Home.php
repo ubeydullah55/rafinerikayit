@@ -560,10 +560,13 @@ class Home extends BaseController
         } else {
             $gecmis = [$takoz];
         }
+        $cacheHurdaGrupKodu=0;
         foreach ($gecmis as $t) {
             if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
                 $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
                 if ($hurda) {
+                    if($cacheHurdaGrupKodu != $t['hurda_grup_kodu']){
+                        $cacheHurdaGrupKodu = $t['hurda_grup_kodu'];                   
                     // hurda verisini tamamlayalım
                     $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
                     $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
@@ -579,6 +582,7 @@ class Home extends BaseController
                     $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
 
                     array_push($gecmis, $hurda);
+                }
                 }
             }
         }
