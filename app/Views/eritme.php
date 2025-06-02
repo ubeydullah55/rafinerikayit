@@ -27,8 +27,8 @@
                             <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
                                 İfraz
                             </button>
-                             <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
-                               İşlenecek
+                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
+                                İşlenecek
                             </button>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
@@ -91,7 +91,7 @@
                             <?php foreach ($items as $item): ?>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * ($item['tahmini_milyem'] / 1000) ?>">
+                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * (( !empty($item['olculen_milyem']) && $item['olculen_milyem'] != 0 ) ? $item['olculen_milyem'] : $item['tahmini_milyem']) / 1000 ?>">
                                     </td>
 
                                     <td><?= esc($item['id']); ?></td>
@@ -101,7 +101,12 @@
                                     <td>
                                         <?php
                                         $gram = !empty($item['islem_goren_miktar']) ? $item['islem_goren_miktar'] : $item['giris_gram'];
-                                        echo number_format($gram * ($item['tahmini_milyem'] / 1000), 2);
+
+                                        $milyem = (!empty($item['olculen_milyem']) && $item['olculen_milyem'] != 0)
+                                            ? $item['olculen_milyem']
+                                            : $item['tahmini_milyem'];
+
+                                        echo number_format($gram * ($milyem / 1000), 2);
                                         ?> gr
                                     </td>
                                     <td><?= esc($item['islem_goren_miktar']); ?></td>
@@ -168,38 +173,38 @@
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Kaydet</button>
                 </div>
-        <div class="row">
-    <!-- SOL SÜTUN -->
-    <div class="col-md-6">
-        <div class="form-group text-center">
-            <label>Seçilen Toplam Ağırlık (gr):</label>
-            <div id="toplam_agirlik" class="form-control-plaintext font-weight-bold text-primary"></div>
-        </div>
+                <div class="row">
+                    <!-- SOL SÜTUN -->
+                    <div class="col-md-6">
+                        <div class="form-group text-center">
+                            <label>Seçilen Toplam Ağırlık (gr):</label>
+                            <div id="toplam_agirlik" class="form-control-plaintext font-weight-bold text-primary"></div>
+                        </div>
 
-        <div class="form-group text-center">
-            <label>Nitrik Asit(HNO3):</label>
-            <div id="asit1_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
-        </div>
+                        <div class="form-group text-center">
+                            <label>Nitrik Asit(HNO3):</label>
+                            <div id="asit1_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
+                        </div>
 
-        <div class="form-group text-center">
-            <label>HidroKlorik Asit(Hcl):</label>
-            <div id="asit2_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
-        </div>
-    </div>
+                        <div class="form-group text-center">
+                            <label>HidroKlorik Asit(Hcl):</label>
+                            <div id="asit2_miktar" class="form-control-plaintext font-weight-bold text-danger"></div>
+                        </div>
+                    </div>
 
-    <!-- SAĞ SÜTUN -->
-    <div class="col-md-6">
-        <div class="form-group text-center">
-            <label>Girdiğiniz Toplam Ağırlık:</label>
-            <div id="toplam_input_agirlik" class="form-control-plaintext font-weight-bold text-info">0 gr</div>
-        </div>
+                    <!-- SAĞ SÜTUN -->
+                    <div class="col-md-6">
+                        <div class="form-group text-center">
+                            <label>Girdiğiniz Toplam Ağırlık:</label>
+                            <div id="toplam_input_agirlik" class="form-control-plaintext font-weight-bold text-info">0 gr</div>
+                        </div>
 
-        <div class="form-group text-center">
-            <label>Fire Miktarı:</label>
-            <div id="fire_miktar" class="form-control-plaintext font-weight-bold text-danger">0 gr</div>
-        </div>
-    </div>
-</div>
+                        <div class="form-group text-center">
+                            <label>Fire Miktarı:</label>
+                            <div id="fire_miktar" class="form-control-plaintext font-weight-bold text-danger">0 gr</div>
+                        </div>
+                    </div>
+                </div>
 
 
             </div>
