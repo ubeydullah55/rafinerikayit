@@ -224,6 +224,7 @@ class Home extends BaseController
             $kalanHasCesni = floatval($input['cesni_gram']);
 
             $model = new \App\Models\TakozModel();
+            $reaktorModel = new \App\Models\ReaktorModel();
             $record = $model->find($id);
             $modelCesni = new \App\Models\CesniModel();
             $modelCesni->update($tableid, [
@@ -247,6 +248,47 @@ class Home extends BaseController
                 'cesni_has' => $kalanHasCesni,
                 'olculen_milyem' => $olculenMilyem
             ]);
+
+            if ($record['tur'] == 2) {
+                $reaktorFire = 0;
+                $eldekiToplamHas = 0;
+                $cikanHasTakoz = 0;
+
+                $gecmis = $model
+                    ->where('grup_kodu', $record['grup_kodu'])
+                    ->findAll();
+
+                $fisIdler = array_column($gecmis, 'id');
+
+                // Daha önce reaktöre insert yapıldı mı kontrol et
+                $adet = $reaktorModel
+                    ->whereIn('fis_no', $fisIdler)
+                    ->countAllResults();
+
+                if ($adet == 0) {
+                    // Daha önce kayıt yapılmamış, insert atabiliriz
+                    foreach ($gecmis as $t) {
+                        if ($t['tur'] == 0) {
+                            $eldekiToplamHas += ($t['islem_goren_miktar'] * $t['olculen_milyem']) / 1000;
+                        }
+                        if ($t['tur'] == 1) {
+                            $eldekiToplamHas += $t['giris_gram'];
+                        }
+                        if ($t['tur'] == 2) {
+                            $cikanHasTakoz += $t['giris_gram'];
+                        }
+                    }
+
+                    $reaktorFire = $eldekiToplamHas - $cikanHasTakoz;
+
+                    $data = [
+                        'fis_no' => $id,
+                        'miktar' => $reaktorFire
+                    ];
+
+                    $reaktorModel->insert($data);
+                }
+            }
 
             return $this->response->setJSON(['success' => $updateSuccess]);
         }
@@ -560,29 +602,29 @@ class Home extends BaseController
         } else {
             $gecmis = [$takoz];
         }
-        $cacheHurdaGrupKodu=0;
+        $cacheHurdaGrupKodu = 0;
         foreach ($gecmis as $t) {
             if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
                 $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
                 if ($hurda) {
-                    if($cacheHurdaGrupKodu != $t['hurda_grup_kodu']){
-                        $cacheHurdaGrupKodu = $t['hurda_grup_kodu'];                   
-                    // hurda verisini tamamlayalım
-                    $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
-                    $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
-                    $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
-                    $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
-                    $hurda['olculen_milyem'] = 0;
-                    $hurda['cesni_has'] = 0;
-                    $hurda['cesni_gram'] = 0;
-                    $hurda['islem_goren_miktar'] = 0;
-                    $hurda['grup_kodu'] = 0;
-                    $hurda['hurda_grup_kodu'] = 0;
-                    $hurda['cesni_id'] = 0;
-                    $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
+                    if ($cacheHurdaGrupKodu != $t['hurda_grup_kodu']) {
+                        $cacheHurdaGrupKodu = $t['hurda_grup_kodu'];
+                        // hurda verisini tamamlayalım
+                        $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
+                        $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
+                        $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
+                        $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
+                        $hurda['olculen_milyem'] = 0;
+                        $hurda['cesni_has'] = 0;
+                        $hurda['cesni_gram'] = 0;
+                        $hurda['islem_goren_miktar'] = 0;
+                        $hurda['grup_kodu'] = 0;
+                        $hurda['hurda_grup_kodu'] = 0;
+                        $hurda['cesni_id'] = 0;
+                        $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
 
-                    array_push($gecmis, $hurda);
-                }
+                        array_push($gecmis, $hurda);
+                    }
                 }
             }
         }
