@@ -62,29 +62,30 @@ class Home extends BaseController
             ->selectSum('miktar')
             ->first();
 
-        // Tüm takozları veritabanından çek
+        // TAKOZLAR: status_code=2 olanlar + customer tablosu join
+        $takozBuilder = $db->table('takozlar');
+        $takozBuilder->select('takozlar.*, customer.ad as musteri_adi');
+        $takozBuilder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $takozBuilder->where('takozlar.status_code', 2);
+        $items = $takozBuilder->get()->getResultArray();
 
-        $hurdalar = $hurdamodel->where('status_code', 2)->findAll();
+        // HURDALAR: status_code=2 olanlar + customer tablosu join
+        $hurdaBuilder = $db->table('hurda');
+        $hurdaBuilder->select('hurda.*, customer.ad as musteri_adi');
+        $hurdaBuilder->join('customer', 'customer.id = hurda.musteri', 'left');
+        $hurdaBuilder->where('hurda.status_code', 2);
+        $hurdalar = $hurdaBuilder->get()->getResultArray();
 
-        // Toplam gramajı hesapla
-        $hurdatotalGram = array_sum(array_column($hurdalar, 'giris_gram'));
+        // CESNİLER: status_code=1 olanlar + takozlar + customer join
+        $cesniBuilder = $db->table('cesni');
+        $cesniBuilder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem, takozlar.olculen_milyem, takozlar.cesni_has, customer.ad as musteri_adi');
+        $cesniBuilder->join('takozlar', 'cesni.fis_no = takozlar.id');
+        $cesniBuilder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $cesniBuilder->where('cesni.status_code', 1);
+        $cesnibilgi = $cesniBuilder->get()->getResultArray();
 
-
-
-        // status_code = 2 olan takozları al
-        $items = $model->where('status_code', 2)->findAll();
-
-        // status_code = 1 olan cesnilerle takozları joinleyelim
-        $builder = $db->table('cesni');
-        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem,takozlar.olculen_milyem,takozlar.cesni_has');
-        $builder->join('takozlar', 'cesni.fis_no = takozlar.id');
-        $builder->where('cesni.status_code', 1);
-
-        $cesnibilgi = $builder->get()->getResultArray();
-
-        // Gram toplamlarını hesapla
+        // Toplam gramaj hesaplama (takozlar)
         $totalGram = 0;
-
         foreach ($items as $item) {
             if ($item['islem_goren_miktar'] > 0) {
                 $totalGram += $item['islem_goren_miktar'];
@@ -93,9 +94,8 @@ class Home extends BaseController
             }
         }
 
-
+        // Toplam gramaj hesaplama (cesniler)
         $totalCesniGram = 0;
-
         foreach ($cesnibilgi as $item) {
             if ($item['cesni_has'] > 0) {
                 $totalCesniGram += $item['cesni_has'] + ($item['agirlik'] - $item['kullanilan']);
@@ -104,9 +104,14 @@ class Home extends BaseController
             }
         }
 
-        $hastakozlar = $model->where('status_code', 5)->findAll();
-        $totalHasTakozGram = 0;
+        // HASTAKOZLAR (status_code=5) + customer join
+        $hastakozBuilder = $db->table('takozlar');
+        $hastakozBuilder->select('takozlar.*, customer.ad as musteri_adi');
+        $hastakozBuilder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $hastakozBuilder->where('takozlar.status_code', 5);
+        $hastakozlar = $hastakozBuilder->get()->getResultArray();
 
+        $totalHasTakozGram = 0;
         foreach ($hastakozlar as $item) {
             if ($item['cesni_has'] > 0) {
                 $totalHasTakozGram += $item['islem_goren_miktar'];
@@ -115,8 +120,6 @@ class Home extends BaseController
             }
         }
 
-
-
         return view('ayarevi', [
             'items' => $items,
             'totalGram' => $totalGram,
@@ -124,7 +127,7 @@ class Home extends BaseController
             'cesnibilgi' => $cesnibilgi,
             'totalCesni' => $totalCesniGram,
             'hurdalar' => $hurdalar,
-            'hurdatotalGram' => $hurdatotalGram,
+            'hurdatotalGram' => array_sum(array_column($hurdalar, 'giris_gram')),
             'hastakozlar' => $hastakozlar,
             'totalHasTakozGram' => $totalHasTakozGram,
             'reaktorToplamFire' => $reaktorFireTotalModel
@@ -133,26 +136,32 @@ class Home extends BaseController
 
 
 
+
     public function eritme()
     {
-        $model = new TakozModel();
-        $modelcesni = new CesniModel();
         $db = \Config\Database::connect();
 
-        // status_code = 2 olan takozları al
-        $items = $model->where('status_code', 3)->findAll();
+        // Takozlar modeli
+        $model = new \App\Models\TakozModel();
 
-        // status_code = 1 olan cesnilerle takozları joinleyelim
+        // status_code = 3 olan takozları müşteri adıyla alalım
+        $builder = $db->table('takozlar');
+        $builder->select('takozlar.*, customer.ad as musteri_adi');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $builder->where('takozlar.status_code', 3);
+        $items = $builder->get()->getResultArray();
+
+        // Cesni bilgisi, takozlar ile join ve müşteri adı ile
         $builder = $db->table('cesni');
-        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem,takozlar.olculen_milyem,takozlar.cesni_has');
+        $builder->select('cesni.*, takozlar.musteri, takozlar.giris_gram, takozlar.tahmini_milyem, takozlar.olculen_milyem, takozlar.cesni_has, customer.ad as musteri_adi');
         $builder->join('takozlar', 'cesni.fis_no = takozlar.id');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
         $builder->where('cesni.status_code', 1);
 
         $cesnibilgi = $builder->get()->getResultArray();
 
         // Gram toplamlarını hesapla
         $totalGram = 0;
-
         foreach ($items as $item) {
             if ($item['islem_goren_miktar'] > 0) {
                 $totalGram += $item['islem_goren_miktar'];
@@ -161,18 +170,15 @@ class Home extends BaseController
             }
         }
 
-
         $totalCesniGram = 0;
-
         foreach ($cesnibilgi as $item) {
             if ($item['cesni_has'] > 0) {
                 $totalCesniGram += $item['cesni_has'];
             } else {
-                $totalCesniGram += $item['agirlik'];
+                // Eğer 'agirlik' alanı yoksa 'giris_gram' olabilir diye kontrol ekleyebilirsin
+                $totalCesniGram += $item['agirlik'] ?? 0;
             }
         }
-
-
 
         return view('eritme', [
             'items' => $items,
@@ -182,6 +188,7 @@ class Home extends BaseController
             'totalCesni' => $totalCesniGram,
         ]);
     }
+
 
 
 
@@ -455,16 +462,18 @@ class Home extends BaseController
             // Veritabanındaki en büyük grup_kodu'nu al
             $sonGrupKodu = (int) ($takozModel->selectMax('grup_kodu')->first()['grup_kodu'] ?? 0);
             $groupCode = $sonGrupKodu + 1;
-
+            $userAd = session()->get('name');
             // Her takoz için yeni kayıt (sadece ağırlık bilgisi)
             foreach ($takozlar as $t) {
                 $takozModel->insert([
-                    'musteri' => 'HasTakoz',
+                    'musteri' => 2291,
                     'giris_gram' => $t['agirlik'],
                     'grup_kodu' => $groupCode,
                     'tahmini_milyem' => 999.9,
                     'status_code' => 5,
-                    'tur' => 2 //hastakoz olarak eklendi
+                    'tur' => 2, //hastakoz olarak eklendi
+                    'created_user' => $userAd,
+                    'created_date' => date('Y-m-d H:i:s'),
                 ]);
             }
 
@@ -495,7 +504,7 @@ class Home extends BaseController
 
         // Hurda verisini al
         $hurda = $hurdaModel->find($hurdaId);
-
+        $userAd = session()->get('name'); 
         if (!$hurda) {
             return $this->response->setJSON([
                 'success' => false,
@@ -522,6 +531,8 @@ class Home extends BaseController
                 'musteri_notu'  => $hurda['musteri_notu'],   // örnek alan
                 'status_code'  => 2,   // örnek alan
                 'hurda_grup_kodu' => $hurdaId,
+                'created_user' => $userAd, 
+                'created_date' => date('Y-m-d H:i:s'),
             ]);
         }
 
@@ -554,19 +565,28 @@ class Home extends BaseController
 
     public function kasaHesap()
     {
+        $db = \Config\Database::connect();
 
-        $model = new TakozModel();
-        $hurdamodel = new HurdaModel();
-        // Tüm takozları veritabanından çek
-        $items = $model->where('status_code', 4)
-            ->where('hurda_grup_kodu <=', 0)
-            ->where('tur =', 0)
-            ->findAll();
-        $hurdalar = $hurdamodel->where('status_code', 1)->findAll();
+        // Takozlar: status_code=4, hurda_grup_kodu <=0, tur=0, müşteri adı ile birlikte
+        $builder = $db->table('takozlar');
+        $builder->select('takozlar.*, customer.ad as musteri_adi');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $builder->where('takozlar.status_code', 4);
+        $builder->where('takozlar.hurda_grup_kodu <=', 0);
+        $builder->where('takozlar.tur', 0);
+        $items = $builder->get()->getResultArray();
 
-        // Toplam gramajı hesapla
+        // Hurdalar: status_code=1, müşteri adı ile
+        $hurdaBuilder = $db->table('hurda');
+        $hurdaBuilder->select('hurda.*, customer.ad as musteri_adi');
+        $hurdaBuilder->join('customer', 'customer.id = hurda.musteri', 'left');
+        $hurdaBuilder->where('hurda.status_code', 1);
+        $hurdalar = $hurdaBuilder->get()->getResultArray();
+
+        // Toplam gramaj hesapları
         $totalGram = array_sum(array_column($items, 'giris_gram'));
         $hurdatotalGram = array_sum(array_column($hurdalar, 'giris_gram'));
+
         return view('kasaHesap', [
             'items' => $items,
             'totalGram' => $totalGram,
@@ -578,18 +598,21 @@ class Home extends BaseController
 
 
 
+
     public function inceleCesni()
     {
-        $data = $this->request->getJSON(true); // fetch ile JSON geldiği için
+        $data = $this->request->getJSON(true);
         $id = $data['id'] ?? null;
 
         if (!$id) {
             return $this->response->setStatusCode(400)->setBody("Geçersiz ID.");
         }
 
+        $db = \Config\Database::connect();
         $cesniModel = new \App\Models\CesniModel();
         $takozModel = new \App\Models\TakozModel();
         $hurdaModel = new \App\Models\HurdaModel();
+
         // 1. Seçilen çeşniyi bul
         $cesni = $cesniModel->find($id);
 
@@ -599,7 +622,13 @@ class Home extends BaseController
 
         // 2. Fis_no'dan takozu bul
         $fisNo = $cesni['fis_no'];
-        $takoz = $takozModel->find($fisNo);
+
+        // Takozları müşteri adıyla alalım
+        $builder = $db->table('takozlar');
+        $builder->select('takozlar.*, customer.ad as musteri_adi');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $builder->where('takozlar.id', $fisNo);
+        $takoz = $builder->get()->getRowArray();
 
         if (!$takoz) {
             return $this->response->setBody("Takoz bilgisi bulunamadı.");
@@ -608,24 +637,32 @@ class Home extends BaseController
         // 3. Grup kodunu al
         $grupKodu = $takoz['grup_kodu'];
 
-
         if ($takoz['status_code'] >= 5) {
-            // 4. Bu grup koduna sahip tüm takozları al (geçmiş hareketler)
-            $gecmis = $takozModel
-                ->where('grup_kodu', $grupKodu)
-                ->findAll();
+            // Grup koduna sahip tüm takozları müşteri adıyla al
+            $builder = $db->table('takozlar');
+            $builder->select('takozlar.*, customer.ad as musteri_adi');
+            $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+            $builder->where('takozlar.grup_kodu', $grupKodu);
+            $gecmis = $builder->get()->getResultArray();
         } else {
             $gecmis = [$takoz];
         }
+
+        // Hurda kayıtlarını müşteri adıyla ekleyelim
         $cacheHurdaGrupKodu = 0;
         foreach ($gecmis as $t) {
             if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
-                $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
+                $hurdaBuilder = $db->table('hurda');
+                $hurdaBuilder->select('hurda.*, customer.ad as musteri_adi');
+                $hurdaBuilder->join('customer', 'customer.id = hurda.musteri', 'left');
+                $hurdaBuilder->where('hurda.id', $t['hurda_grup_kodu']);
+                $hurda = $hurdaBuilder->get()->getRowArray();
+
                 if ($hurda) {
                     if ($cacheHurdaGrupKodu != $t['hurda_grup_kodu']) {
                         $cacheHurdaGrupKodu = $t['hurda_grup_kodu'];
-                        // hurda verisini tamamlayalım
-                        $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
+
+                        $hurda['id'] = 'H-' . $t['hurda_grup_kodu'];
                         $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
                         $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
                         $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
@@ -637,7 +674,7 @@ class Home extends BaseController
                         $hurda['hurda_grup_kodu'] = 0;
                         $hurda['cesni_id'] = 0;
                         $hurda['musteri_notu'] = $hurda['musteri_notu'] ?? '';
-
+                       
                         array_push($gecmis, $hurda);
                     }
                 }
@@ -649,52 +686,52 @@ class Home extends BaseController
             $bHurda = str_starts_with($b['id'], 'H-') ? 0 : 1;
             return $aHurda <=> $bHurda;
         });
-        // 5. Partial view döndür (incele_partial.php)
+
         return view('incele_partial', [
             'cesni' => $cesni,
             'gecmis' => $gecmis
         ]);
     }
 
+
     public function inceleTakoz()
     {
-        $data = $this->request->getJSON(true); // fetch ile JSON geldiği için
+        $data = $this->request->getJSON(true);
         $id = $data['id'] ?? null;
 
         if (!$id) {
             return $this->response->setStatusCode(400)->setBody("Geçersiz ID.");
         }
 
-        $cesniModel = new \App\Models\CesniModel();
+        $db = \Config\Database::connect();
         $takozModel = new \App\Models\TakozModel();
         $hurdaModel = new \App\Models\HurdaModel();
-        // 1. Seçilen çeşniyi bul
 
         $takoz = $takozModel->find($id);
-
 
         if (!$takoz) {
             return $this->response->setBody("Kayıt bulunamadı.");
         }
 
-        // 2. Fis_no'dan takozu bul
-
-
-        // 3. Grup kodunu al
         $grupKodu = $takoz['grup_kodu'];
 
-
+        // Grup koduna göre takozları customer tablosundan müşteri adı ile beraber çekelim
         if ($takoz['tur'] != 1) {
-            // 4. Bu grup koduna sahip tüm takozları al (geçmiş hareketler)
-            $gecmis = $takozModel
-                ->where('grup_kodu', $grupKodu)
-                ->findAll();
+            $builder = $db->table('takozlar');
+            $builder->select('takozlar.*, customer.ad as musteri_adi');
+            $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+            $builder->where('takozlar.grup_kodu', $grupKodu);
+            $gecmis = $builder->get()->getResultArray();
         } else {
-            $gecmis = [$takoz];
+            // tek kayıt olduğunda da müşteri adını ekleyelim
+            $builder = $db->table('takozlar');
+            $builder->select('takozlar.*, customer.ad as musteri_adi');
+            $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+            $builder->where('takozlar.id', $id);
+            $gecmis = $builder->get()->getResultArray();
         }
 
-
-
+        // Hesaplamalar ve hurda ekleme kısmı aynı, hurda verisini de müşteri adıyla ekleyelim
         $reaktorFire = 0;
         $eldekiToplamHas = 0;
         $cikanHasTakoz = 0;
@@ -717,14 +754,20 @@ class Home extends BaseController
         $toplamTakoz = 0;
         foreach ($gecmis as $t) {
             if (!empty($t['hurda_grup_kodu']) && $t['hurda_grup_kodu'] > 0) {
-                $hurda = $hurdaModel->find($t['hurda_grup_kodu']);
+                // Hurda kaydını müşteri adı ile birlikte alalım
+                $hurdaBuilder = $db->table('hurda');
+                $hurdaBuilder->select('hurda.*, customer.ad as musteri_adi');
+                $hurdaBuilder->join('customer', 'customer.id = hurda.musteri', 'left');
+                $hurdaBuilder->where('hurda.id', $t['hurda_grup_kodu']);
+                $hurda = $hurdaBuilder->get()->getRowArray();
 
                 if ($hurda) {
                     if ($cacheHurdaGrupKodu != $t['hurda_grup_kodu']) {
                         $toplamHurda += $hurda['giris_gram'];
                         $cacheHurdaGrupKodu = $t['hurda_grup_kodu'];
-                        // hurda verisini tamamlayalım
-                        $hurda['id'] = 'H-' . $t['hurda_grup_kodu']; // farklı olsun diye H- prefix
+
+                        // Hurda verisini tamamlayalım
+                        $hurda['id'] = 'H-' . $t['hurda_grup_kodu'];
                         $hurda['musteri'] = $hurda['musteri'] . ' (Hurda)';
                         $hurda['agirlik'] = $hurda['giris_gram'] ?? 0;
                         $hurda['tahmini_milyem'] = $hurda['tahmini_milyem'] ?? '-';
@@ -752,13 +795,14 @@ class Home extends BaseController
             $bHurda = str_starts_with($b['id'], 'H-') ? 0 : 1;
             return $aHurda <=> $bHurda;
         });
-        // 5. Partial view döndür (incele_partial.php)
+
         return view('incele_partial', [
             'gecmis' => $gecmis,
             'eritme_fire' => $eritmeFire,
             'reaktor_fire' => $reaktorFire
         ]);
     }
+
 
 
     public function islenecek()

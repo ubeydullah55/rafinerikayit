@@ -13,6 +13,8 @@
                     <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
                     <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
                     <th class="table-plus datatable-nosort">İşlem Gören Miktar</th>
+                    <th class="table-plus datatable-nosort">İşlem Yapan</th>
+                    <th class="table-plus datatable-nosort">İşlem Tarih</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,10 +26,12 @@
                 <?php foreach ($gecmis as $item): ?>
                     <tr>
                         <td><?= esc($item['id']); ?></td>
-                        <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                        <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                         <td><?= number_format(esc($item['giris_gram']), 3); ?> gr</td>
                         <td><?= esc($item['olculen_milyem']); ?></td>
                          <td><?= esc($item['islem_goren_miktar']); ?> gr</td>
+                         <td><?= esc($item['created_user']); ?></td>
+                         <td><?= esc($item['created_date']); ?></td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

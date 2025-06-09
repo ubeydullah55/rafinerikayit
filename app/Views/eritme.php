@@ -95,7 +95,7 @@
                                     </td>
 
                                     <td><?= esc($item['id']); ?></td>
-                                    <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
                                     <td>

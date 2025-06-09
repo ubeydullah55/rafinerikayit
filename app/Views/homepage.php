@@ -108,7 +108,8 @@
     '<?= esc($item['musteri_adi']); ?>',
     <?= number_format((float)$item['giris_gram'], 2, '.', ''); ?>,
     '<?= esc($item['tahmini_milyem']); ?>',
-    '<?= esc($item['musteri_notu']) ?: '-'; ?>'
+    '<?= esc($item['musteri_notu']) ?: '-'; ?>',
+	 '<?= $item['created_user']; ?>',
 )" class="dropdown-item">
 													<i class="dw dw-print"></i> Fiş Yazdır
 												</a>
@@ -436,7 +437,7 @@
 
 
 <script>
-	function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu) {
+	function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu,islemYapan) {
 		var printWindow = window.open('', '', 'width=300,height=600');
 
 		var icerik = `
@@ -483,6 +484,7 @@
                 <p><strong>Gramaj:</strong> ${girisGram} gr</p>
                 <p><strong>Tahmini Milyem:</strong> ${tahminiMilyem}</p>
                 <p><strong>Not:</strong> ${musteriNotu}</p>
+				<p><strong>İşlem Yapan Personel:</strong> ${islemYapan}</p>
                 <p><strong>Tarih:</strong> ${new Date().toLocaleString()}</p>
             </div>
             <script>

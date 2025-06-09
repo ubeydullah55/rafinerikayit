@@ -27,13 +27,15 @@ public function kaydet()
     $request = service('request');
 
     $altin_turu = $request->getPost('altin_turu'); // 0 = Hurda, 1 = Takoz
-
+$userAd = session()->get('name');
     $data = [
-        'musteri' => $musteriId = $this->request->getPost('musteri_id'),
+        'musteri' =>  $this->request->getPost('musteri_id'),
         'giris_gram' => floatval($request->getPost('giris_agirlik')),
         'tahmini_milyem' => floatval($request->getPost('tahmini_milyem')),
         'musteri_notu' => $request->getPost('musteri_notu'),
         'status_code' => 1, // Bekleme durumu
+        'created_user' => $userAd,
+        'created_date' => date('Y-m-d H:i:s'),
     ];
 
     // Modeli seç

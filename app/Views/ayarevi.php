@@ -89,7 +89,7 @@
                             <?php foreach ($items as $item): ?>
                                 <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
                                     <td><?= esc($item['id']); ?></td>
-                                    <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
                                     <td>
@@ -168,7 +168,7 @@
                             <?php foreach ($hurdalar as $item): ?>
                                 <tr>
                                     <td><?= esc($item['id']); ?></td>
-                                    <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
                                     <td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
@@ -242,7 +242,7 @@
                             <?php foreach ($hastakozlar as $item): ?>
                                 <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
                                     <td><?= esc($item['id']); ?></td>
-                                    <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
                                     <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
@@ -326,7 +326,7 @@
                             <?php foreach ($cesnibilgi as $item): ?>
                                 <tr <?= ($item['cesni_has'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
                                     <td><?= esc($item['fis_no']); ?></td>
-                                    <td class="table-plus"><?= esc($item['musteri']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= esc($item['agirlik']); ?></td>
                                   
                                     <td>
@@ -372,7 +372,7 @@
                                                         data-islem-gormeyen="<?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>"
                                                         data-has="<?= esc($item['cesni_has']); ?>"
                                                         data-total="<?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>"
-                                                        data-musteri="<?= esc($item['musteri']); ?>">
+                                                        data-musteri="<?= esc($item['musteri_adi']); ?>">
                                                         <i class="dw dw-print"></i> Yazdır
                                                     </a>
                                                 <?php endif; ?>
