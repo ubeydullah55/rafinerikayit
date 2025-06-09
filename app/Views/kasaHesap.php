@@ -36,6 +36,18 @@
                     <h4 class="text-blue h4">KASA KÜLÇE TAKİP</h4>
                 </div>
                 <div class="pb-20">
+                    <div class="pd-20 d-flex justify-content-end align-items-center gap-2">
+                        <label for="baslangic_tarih" class="mb-0 mr-2">Başlangıç:</label>
+                        <input type="date" id="baslangic_tarih" class="form-control" style="width: 200px;">
+
+                        <label for="bitis_tarih" class="mb-0 ml-3 mr-2">Bitiş:</label>
+                        <input type="date" id="bitis_tarih" class="form-control" style="width: 200px;">
+
+                        <button class="btn btn-primary ml-3" onclick="filtreleTablo()">Filtrele</button>
+                        <button class="btn btn-outline-secondary ml-2" onclick="temizleFiltre()">Temizle</button>
+                    </div>
+
+
                     <table
                         class="table hover multiple-select-row data-table-export nowrap">
 
@@ -54,6 +66,7 @@
                                 <th class="table-plus datatable-nosort">Ölçüm Has</th>
                                 <th class="table-plus datatable-nosort">Action</th>
                             </tr>
+
                         </thead>
                         <tbody>
                             <?php
@@ -62,7 +75,7 @@
                             ?>
 
                             <?php foreach ($items as $item): ?>
-                                <tr>
+                                <tr data-tarih="<?= esc(date('Y-m-d', strtotime($item['created_date']))) ?>">
 
                                     <td><?= esc($item['id']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
@@ -73,6 +86,7 @@
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
+
                                     <td><?= number_format($item['giris_gram'] * ($item['olculen_milyem'] / 1000), 2); ?> gr</td>
                                     <td>
                                         <div class="dropdown">
@@ -177,6 +191,7 @@
                 </div>
 
                 <p><strong>Has Bedel (Oranlı Tutar):</strong> <span id="hasBedel"></span> gram</p>
+                <p><strong>Has Geri Verilecek:</strong> <span id="hasGeriVerilecek"></span> gram</p>
                 <p><strong>TL Karşılığı (Güncel Altın Fiyatı):</strong> <span id="tlKarsilik"></span> ₺</p>
             </div>
 
@@ -225,51 +240,53 @@
 
 
 <script>
-let globalHasAltin = 0;
+    let globalHasAltin = 0;
 
-function hesaplaModalAc(agirlik, milyem, oran = '') {
-    let agirlikFloat = parseFloat(agirlik);
-    let milyemFloat = parseFloat(milyem);
-    let hasAltin = (agirlikFloat * milyemFloat) / 1000;
-    globalHasAltin = hasAltin;
+    function hesaplaModalAc(agirlik, milyem, oran = '') {
+        let agirlikFloat = parseFloat(agirlik);
+        let milyemFloat = parseFloat(milyem);
+        let hasAltin = (agirlikFloat * milyemFloat) / 1000;
+        globalHasAltin = hasAltin;
 
-    // Yazıları yerleştir
-    document.getElementById("agirlikDegeri").innerText = agirlik;
-    document.getElementById("milyemDegeri").innerText = milyem;
-    document.getElementById("hasDegeri").innerText = hasAltin.toFixed(2);
+        // Yazıları yerleştir
+        document.getElementById("agirlikDegeri").innerText = agirlik;
+        document.getElementById("milyemDegeri").innerText = milyem;
+        document.getElementById("hasDegeri").innerText = hasAltin.toFixed(2);
 
-    // Oranı yerleştir (boş olabilir)
-    document.getElementById("oranInput").value = oran || '';
+        // Oranı yerleştir (boş olabilir)
+        document.getElementById("oranInput").value = oran || '';
 
-    // Fiyatı boşalt ve tekrar çek
-    document.getElementById("fiyatInput").value = '';
-    document.getElementById("hasBedel").innerText = '';
-    document.getElementById("tlKarsilik").innerText = '';
+        // Fiyatı boşalt ve tekrar çek
+        document.getElementById("fiyatInput").value = '';
+        document.getElementById("hasBedel").innerText = '';
+        document.getElementById("hasGeriVerilecek").innerText = '';
+        document.getElementById("tlKarsilik").innerText = '';
 
-    fetch('https://finans.truncgil.com/v4/today.json')
-        .then(res => res.json())
-        .then(data => {
-            if (data["GRA"] && data["GRA"]["Buying"]) {
-                let fiyat = parseFloat(data["GRA"]["Buying"]);
-                document.getElementById("fiyatInput").value = fiyat.toFixed(2);
-                yenidenHesapla();
-            }
-        });
+        fetch('https://finans.truncgil.com/v4/today.json')
+            .then(res => res.json())
+            .then(data => {
+                if (data["GRA"] && data["GRA"]["Buying"]) {
+                    let fiyat = parseFloat(data["GRA"]["Buying"]);
+                    document.getElementById("fiyatInput").value = fiyat.toFixed(2);
+                    yenidenHesapla();
+                }
+            });
 
-    $('#hesaplaModal').modal('show');
-}
+        $('#hesaplaModal').modal('show');
+    }
 
-function yenidenHesapla() {
-    let oran = parseFloat(document.getElementById("oranInput").value.replace(",", "."));
-    let fiyat = parseFloat(document.getElementById("fiyatInput").value.replace(",", "."));
+    function yenidenHesapla() {
+        let oran = parseFloat(document.getElementById("oranInput").value.replace(",", "."));
+        let fiyat = parseFloat(document.getElementById("fiyatInput").value.replace(",", "."));
 
-    let hasBedel = isNaN(oran) ? 0 : globalHasAltin * oran;
-    let tlKarsilik = isNaN(fiyat) ? 0 : hasBedel * fiyat; 
+        let hasBedel = isNaN(oran) ? 0 : globalHasAltin * oran;
+        let hasGeriVerilecek =globalHasAltin-hasBedel;
+        let tlKarsilik = isNaN(fiyat) ? 0 : hasBedel * fiyat;
 
-    document.getElementById("hasBedel").innerText = hasBedel.toFixed(2);
-    document.getElementById("tlKarsilik").innerText = tlKarsilik.toFixed(2);
-}
-
+        document.getElementById("hasBedel").innerText = hasBedel.toFixed(2);
+        document.getElementById("hasGeriVerilecek").innerText = hasGeriVerilecek.toFixed(2);
+        document.getElementById("tlKarsilik").innerText = tlKarsilik.toFixed(2);
+    }
 </script>
 
 
@@ -287,8 +304,51 @@ function yenidenHesapla() {
 
 
 
+<script>
+    function filtreleTablo() {
+        const baslangic = new Date(document.getElementById("baslangic_tarih").value);
+        const bitis = new Date(document.getElementById("bitis_tarih").value);
+        bitis.setHours(23, 59, 59); // bitiş tarihine gün sonunu dahil et
+
+        const rows = document.querySelectorAll("table tbody tr");
+
+        rows.forEach(row => {
+            const fisTarihiText = row.getAttribute('data-tarih'); // Aşağıda bunu ekleyeceğiz
+            if (!fisTarihiText) return;
+
+            const fisTarihi = new Date(fisTarihiText);
+
+            if ((isNaN(baslangic) || fisTarihi >= baslangic) &&
+                (isNaN(bitis) || fisTarihi <= bitis)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    function temizleFiltre() {
+        document.getElementById("baslangic_tarih").value = "";
+        document.getElementById("bitis_tarih").value = "";
+        filtreleTablo(); // tüm satırları geri getir
+    }
+</script>
 
 
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        const formatDate = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+
+        document.getElementById('baslangic_tarih').value = formatDate(yesterday);
+        document.getElementById('bitis_tarih').value = formatDate(today);
+    });
+</script>
 
 
 
