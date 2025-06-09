@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\CesniModel;
 use App\Models\HurdaModel;
+use App\Models\ReaktorModel;
 use App\Models\TakozModel;
 use CodeIgniter\Model;
 
@@ -46,7 +47,10 @@ class Home extends BaseController
         $hurdamodel = new HurdaModel();
         $db = \Config\Database::connect();
 
-
+        $reaktorModel=new ReaktorModel();
+        $reaktorFireTotalModel = $reaktorModel
+    ->selectSum('miktar')
+    ->first();
 
         // Tüm takozları veritabanından çek
 
@@ -112,7 +116,8 @@ class Home extends BaseController
             'hurdalar' => $hurdalar,
             'hurdatotalGram' => $hurdatotalGram,
             'hastakozlar' => $hastakozlar,
-            'totalHasTakozGram' => $totalHasTakozGram
+            'totalHasTakozGram' => $totalHasTakozGram,
+            'reaktorToplamFire'=>$reaktorFireTotalModel
         ]);
     }
 

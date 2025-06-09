@@ -31,19 +31,19 @@
                                 İşlenecek
                             </button>
                         </div>
+                    </div>
+
+                    <div class="col-md-6 col-sm-12 d-flex align-items-end justify-content-end">
                         <nav aria-label="breadcrumb" role="navigation">
-                            <ol class="breadcrumb">
+                            <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item">
-                                    <a href="index.html">Anasayfa</a>
-                                </li>
-                                <li class="breadcrumb-item active" aria-current="page">
-                                    Liste
+                                    <strong>Reaktörde Kalan:</strong> <?= number_format($reaktorToplamFire['miktar'] ?? 0, 2) ?> gr
                                 </li>
                             </ol>
                         </nav>
                     </div>
-
                 </div>
+
             </div>
             <!-- Simple Datatable start -->
 
@@ -309,6 +309,7 @@
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Alınan Toplam Çeşni Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">İşlem Görmeyen</th>
+                                <th class="table-plus datatable-nosort">İşlem Gören</th>
                                 <th class="table-plus datatable-nosort">Kalan Has Çeşni</th>
                                 <th class="table-plus datatable-nosort">Poşet Toplam Çeşni</th>
                                 <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
@@ -327,10 +328,13 @@
                                     <td><?= esc($item['fis_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri']); ?></td>
                                     <td><?= esc($item['agirlik']); ?></td>
+                                  
                                     <td>
                                         <?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>
                                     </td>
-
+                                      <td>
+                                        <?= ($item['kullanilan'] ?? 0); ?>
+                                    </td>
                                     <td><?= esc($item['cesni_has']); ?></td>
                                     <td>
                                         <?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>
