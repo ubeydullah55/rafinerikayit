@@ -74,20 +74,25 @@
                                     <td><?= esc($item['olculen_milyem']); ?></td>
                                     <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
                                     <td><?= number_format($item['giris_gram'] * ($item['olculen_milyem'] / 1000), 2); ?> gr</td>
-                                    	<td>
-										<div class="dropdown">
-											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-												<i class="dw dw-more"></i>
-											</a>
-											<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-												 <a href="#" class="dropdown-item" onclick="inceleTakoz(<?= $item['id'] ?>)">
+                                    <td>
+                                        <div class="dropdown">
+                                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                                                <i class="dw dw-more"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                                <a href="#" class="dropdown-item" onclick="inceleTakoz(<?= $item['id'] ?>)">
                                                     <i class="dw dw-eye"></i> İncele
                                                 </a>
-												<a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Hesapla</a>
-												
-											</div>
-										</div>
-									</td>
+                                                <a class="dropdown-item" href="#"
+                                                    onclick="hesaplaModalAc('<?= $item['giris_gram']; ?>', '<?= $item['olculen_milyem']; ?>')">
+                                                    <i class="dw dw-edit2"></i> Hesapla
+                                                </a>
+
+
+
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -95,7 +100,7 @@
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
                                 <td style="font-weight:bold;"><?= number_format($totalGram, 3); ?> gr</td>
-                               
+
                             </tr>
 
                         </tfoot>
@@ -126,19 +131,50 @@
 
 <!-- Çeşni İncele Modal -->
 <div class="modal fade" id="cesniInceleModal" tabindex="-1" role="dialog" aria-labelledby="cesniInceleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">iŞLEM GEÇMİŞ DETAYLARI</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body" id="cesniInceleContent">
-        <div class="text-center">Yükleniyor...</div>
-      </div>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">iŞLEM GEÇMİŞ DETAYLARI</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="cesniInceleContent">
+                <div class="text-center">Yükleniyor...</div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+
+
+
+
+<!-- Hesapla Modal -->
+<div class="modal fade" id="hesaplaModal" tabindex="-1" role="dialog" aria-labelledby="hesaplaModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="hesaplaModalLabel">Ölçüm Hası</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body">
+                    <p><strong>Toplam Ağırlık:</strong> <span id="agirlikDegeri"></span></p>
+                    <p><strong>Milyem:</strong> <span id="milyemDegeri"></span></p>
+                    <p><strong>Has Altın:</strong> <span id="hasDegeri"></span></p>
+                    <p><strong>Gümüş (Katkı Metal):</strong> <span id="gumusDegeri"></span></p>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -146,38 +182,52 @@
 
 
 
+<script>
+    function inceleTakoz(id) {
+        // Modalı aç
+        $('#cesniInceleModal').modal('show');
+        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
 
+        fetch('<?= base_url('takoz/incele') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    id: id
+                })
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('cesniInceleContent').innerHTML = html;
+            })
+            .catch(error => {
+                console.error("Hata:", error);
+                document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
+            });
+    }
+</script>
 
 
 
 
 <script>
-function inceleTakoz(id) {
-    // Modalı aç
-    $('#cesniInceleModal').modal('show');
-    document.getElementById('cesniInceleContent').innerHTML = '<div class="text-center">Yükleniyor...</div>';
+    function hesaplaModalAc(agirlik, milyem) {
+        let agirlikFloat = parseFloat(agirlik);
+        let milyemFloat = parseFloat(milyem);
 
-    fetch('<?= base_url('takoz/incele') ?>', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({ id: id })
-    })
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('cesniInceleContent').innerHTML = html;
-    })
-    .catch(error => {
-        console.error("Hata:", error);
-        document.getElementById('cesniInceleContent').innerHTML = '<div class="text-danger">Sunucu hatası oluştu.</div>';
-    });
-}
+        let hasAltin = (agirlikFloat * milyemFloat) / 1000;
+        let gumusMiktar = agirlikFloat - hasAltin;
+
+        document.getElementById("agirlikDegeri").innerText = agirlik + ' gr';
+        document.getElementById("milyemDegeri").innerText = milyem;
+        document.getElementById("hasDegeri").innerText = hasAltin.toFixed(2) + ' gr';
+        document.getElementById("gumusDegeri").innerText = gumusMiktar.toFixed(2) + ' gr';
+
+        $('#hesaplaModal').modal('show');
+    }
 </script>
-
-
-
 
 
 
