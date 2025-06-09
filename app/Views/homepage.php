@@ -86,7 +86,7 @@
 							<?php foreach ($items as $item): ?>
 								<tr>
 									<td><?= esc($item['id']); ?></td>
-									<td class="table-plus"><?= esc($item['musteri']); ?></td>
+									<td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
 									<td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
 									<td><?= esc($item['tahmini_milyem']); ?></td>
 									<td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
@@ -105,7 +105,7 @@
 
 												<a href="#" onclick="yazdirTakoz(
     <?= $item['id']; ?>,
-    '<?= esc($item['musteri']); ?>',
+    '<?= esc($item['musteri_adi']); ?>',
     <?= number_format((float)$item['giris_gram'], 2, '.', ''); ?>,
     '<?= esc($item['tahmini_milyem']); ?>',
     '<?= esc($item['musteri_notu']) ?: '-'; ?>'
@@ -158,7 +158,7 @@
 							<?php foreach ($hurdalar as $item): ?>
 								<tr>
 									<td><?= esc($item['id']); ?></td>
-									<td class="table-plus"><?= esc($item['musteri']); ?></td>
+									<td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
 									<td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
 									<td><?= esc($item['tahmini_milyem']); ?></td>
 									<td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
@@ -436,10 +436,10 @@
 
 
 <script>
-function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu) {
-    var printWindow = window.open('', '', 'width=300,height=600');
+	function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu) {
+		var printWindow = window.open('', '', 'width=300,height=600');
 
-    var icerik = `
+		var icerik = `
         <html>
         <head>
             <title>Fiş Yazdır</title>
@@ -497,10 +497,10 @@ function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu) {
         </html>
     `;
 
-    printWindow.document.open();
-    printWindow.document.write(icerik);
-    printWindow.document.close();
-}
+		printWindow.document.open();
+		printWindow.document.write(icerik);
+		printWindow.document.close();
+	}
 </script>
 
 

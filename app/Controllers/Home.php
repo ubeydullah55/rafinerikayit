@@ -20,17 +20,26 @@ class Home extends BaseController
 
     public function index()
     {
-        // Modeli yükleyelim
+        $db = \Config\Database::connect();
 
-        $model = new TakozModel();
-        $hurdamodel = new HurdaModel();
-        // Tüm takozları veritabanından çek
-        $items = $model->where('status_code', 1)->findAll();
-        $hurdalar = $hurdamodel->where('status_code', 1)->findAll();
+        // TAKOZLAR: Customer tablosuyla join
+        $builder = $db->table('takozlar');
+        $builder->select('takozlar.*, customer.ad as musteri_adi');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $builder->where('takozlar.status_code', 1);
+        $items = $builder->get()->getResultArray();
 
-        // Toplam gramajı hesapla
+        // HURDALAR: Customer tablosuyla join
+        $hurdaBuilder = $db->table('hurda');
+        $hurdaBuilder->select('hurda.*, customer.ad as musteri_adi');
+        $hurdaBuilder->join('customer', 'customer.id = hurda.musteri', 'left');
+        $hurdaBuilder->where('hurda.status_code', 1);
+        $hurdalar = $hurdaBuilder->get()->getResultArray();
+
+        // Toplamlar
         $totalGram = array_sum(array_column($items, 'giris_gram'));
         $hurdatotalGram = array_sum(array_column($hurdalar, 'giris_gram'));
+
         return view('homepage', [
             'items' => $items,
             'totalGram' => $totalGram,
@@ -40,6 +49,7 @@ class Home extends BaseController
         ]);
     }
 
+
     public function ayarevi()
     {
         $model = new TakozModel();
@@ -47,10 +57,10 @@ class Home extends BaseController
         $hurdamodel = new HurdaModel();
         $db = \Config\Database::connect();
 
-        $reaktorModel=new ReaktorModel();
+        $reaktorModel = new ReaktorModel();
         $reaktorFireTotalModel = $reaktorModel
-    ->selectSum('miktar')
-    ->first();
+            ->selectSum('miktar')
+            ->first();
 
         // Tüm takozları veritabanından çek
 
@@ -117,7 +127,7 @@ class Home extends BaseController
             'hurdatotalGram' => $hurdatotalGram,
             'hastakozlar' => $hastakozlar,
             'totalHasTakozGram' => $totalHasTakozGram,
-            'reaktorToplamFire'=>$reaktorFireTotalModel
+            'reaktorToplamFire' => $reaktorFireTotalModel
         ]);
     }
 

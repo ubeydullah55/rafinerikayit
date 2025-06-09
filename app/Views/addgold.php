@@ -22,7 +22,14 @@
                     <div class="col-md-3 col-sm-12">
                         <div class="form-group">
                             <label>Müşteri<span class="text-danger">*</span></label>
-                            <input type="text" name="musteri" class="form-control" oninput="this.value = fixTurkishUppercase(this.value);" required />
+                            <select name="musteri_id" class="form-control" required>
+                                <option value="">Seçiniz</option>
+                                <?php foreach ($customers as $customer): ?>
+                                    <option value="<?= esc($customer['id']) ?>">
+                                        <?= esc(strtoupper($customer['ad'])) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-2 col-sm-12">

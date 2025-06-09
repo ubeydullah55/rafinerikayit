@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
+use App\Models\CustomerModel;
 
 class AddGoldController extends BaseController
 {
@@ -14,7 +14,10 @@ class AddGoldController extends BaseController
     }
     public function index()
     {
-        return view('addgold');
+         $customerModel = new CustomerModel();
+        $data['customers'] = $customerModel->findAll();
+
+        return view('addgold', $data);
     }
 
 
@@ -26,7 +29,7 @@ public function kaydet()
     $altin_turu = $request->getPost('altin_turu'); // 0 = Hurda, 1 = Takoz
 
     $data = [
-        'musteri' => $request->getPost('musteri'),
+        'musteri' => $musteriId = $this->request->getPost('musteri_id'),
         'giris_gram' => floatval($request->getPost('giris_agirlik')),
         'tahmini_milyem' => floatval($request->getPost('tahmini_milyem')),
         'musteri_notu' => $request->getPost('musteri_notu'),
