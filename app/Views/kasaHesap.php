@@ -84,9 +84,10 @@
                                                     <i class="dw dw-eye"></i> İncele
                                                 </a>
                                                 <a class="dropdown-item" href="#"
-                                                    onclick="hesaplaModalAc('<?= $item['giris_gram']; ?>', '<?= $item['olculen_milyem']; ?>')">
+                                                    onclick="hesaplaModalAc('<?= $item['giris_gram']; ?>', '<?= $item['olculen_milyem']; ?>', '<?= $item['oran'] ?? '' ?>')">
                                                     <i class="dw dw-edit2"></i> Hesapla
                                                 </a>
+
 
 
 
@@ -161,14 +162,25 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="modal-body">
-                    <p><strong>Toplam Ağırlık:</strong> <span id="agirlikDegeri"></span></p>
-                    <p><strong>Milyem:</strong> <span id="milyemDegeri"></span></p>
-                    <p><strong>Has Altın:</strong> <span id="hasDegeri"></span></p>
-                    <p><strong>Gümüş (Katkı Metal):</strong> <span id="gumusDegeri"></span></p>
+                <p><strong>Toplam Ağırlık:</strong> <span id="agirlikDegeri"></span> gr</p>
+                <p><strong>Milyem:</strong> <span id="milyemDegeri"></span></p>
+                <p><strong>Has Altın (gr):</strong> <span id="hasDegeri"></span></p>
+
+                <div class="form-group">
+                    <label>Oran %</label>
+                    <input type="number" step="0.0001" class="form-control" id="oranInput" oninput="yenidenHesapla()">
                 </div>
 
+                <div class="form-group">
+                    <label>Gram Altın Fiyatı (₺)</label>
+                    <input type="number" step="0.01" class="form-control" id="fiyatInput" oninput="yenidenHesapla()">
+                </div>
+
+                <p><strong>Has Bedel (Oranlı Tutar):</strong> <span id="hasBedel"></span> gram</p>
+                <p><strong>TL Karşılığı (Güncel Altın Fiyatı):</strong> <span id="tlKarsilik"></span> ₺</p>
             </div>
+
+
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
@@ -213,21 +225,55 @@
 
 
 <script>
-    function hesaplaModalAc(agirlik, milyem) {
-        let agirlikFloat = parseFloat(agirlik);
-        let milyemFloat = parseFloat(milyem);
+let globalHasAltin = 0;
 
-        let hasAltin = (agirlikFloat * milyemFloat) / 1000;
-        let gumusMiktar = agirlikFloat - hasAltin;
+function hesaplaModalAc(agirlik, milyem, oran = '') {
+    let agirlikFloat = parseFloat(agirlik);
+    let milyemFloat = parseFloat(milyem);
+    let hasAltin = (agirlikFloat * milyemFloat) / 1000;
+    globalHasAltin = hasAltin;
 
-        document.getElementById("agirlikDegeri").innerText = agirlik + ' gr';
-        document.getElementById("milyemDegeri").innerText = milyem;
-        document.getElementById("hasDegeri").innerText = hasAltin.toFixed(2) + ' gr';
-        document.getElementById("gumusDegeri").innerText = gumusMiktar.toFixed(2) + ' gr';
+    // Yazıları yerleştir
+    document.getElementById("agirlikDegeri").innerText = agirlik;
+    document.getElementById("milyemDegeri").innerText = milyem;
+    document.getElementById("hasDegeri").innerText = hasAltin.toFixed(2);
 
-        $('#hesaplaModal').modal('show');
-    }
+    // Oranı yerleştir (boş olabilir)
+    document.getElementById("oranInput").value = oran || '';
+
+    // Fiyatı boşalt ve tekrar çek
+    document.getElementById("fiyatInput").value = '';
+    document.getElementById("hasBedel").innerText = '';
+    document.getElementById("tlKarsilik").innerText = '';
+
+    fetch('https://finans.truncgil.com/v4/today.json')
+        .then(res => res.json())
+        .then(data => {
+            if (data["GRA"] && data["GRA"]["Buying"]) {
+                let fiyat = parseFloat(data["GRA"]["Buying"]);
+                document.getElementById("fiyatInput").value = fiyat.toFixed(2);
+                yenidenHesapla();
+            }
+        });
+
+    $('#hesaplaModal').modal('show');
+}
+
+function yenidenHesapla() {
+    let oran = parseFloat(document.getElementById("oranInput").value.replace(",", "."));
+    let fiyat = parseFloat(document.getElementById("fiyatInput").value.replace(",", "."));
+
+    let hasBedel = isNaN(oran) ? 0 : globalHasAltin * oran;
+    let tlKarsilik = isNaN(fiyat) ? 0 : hasBedel * fiyat; 
+
+    document.getElementById("hasBedel").innerText = hasBedel.toFixed(2);
+    document.getElementById("tlKarsilik").innerText = tlKarsilik.toFixed(2);
+}
+
 </script>
+
+
+
 
 
 

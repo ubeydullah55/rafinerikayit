@@ -569,7 +569,7 @@ class Home extends BaseController
 
         // Takozlar: status_code=4, hurda_grup_kodu <=0, tur=0, müşteri adı ile birlikte
         $builder = $db->table('takozlar');
-        $builder->select('takozlar.*, customer.ad as musteri_adi');
+        $builder->select('takozlar.*, customer.ad as musteri_adi,customer.*');
         $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
         $builder->where('takozlar.status_code', 4);
         $builder->where('takozlar.hurda_grup_kodu <=', 0);
