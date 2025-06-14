@@ -114,7 +114,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($totalGram, 3); ?> gr</td>
+                                  <td style="font-weight:bold;" id="toplam_gram">0.000 gr</td>
 
                             </tr>
 
@@ -305,34 +305,76 @@
 
 
 <script>
-    function filtreleTablo() {
-        const baslangic = new Date(document.getElementById("baslangic_tarih").value);
-        const bitis = new Date(document.getElementById("bitis_tarih").value);
-        bitis.setHours(23, 59, 59); // bitiş tarihine gün sonunu dahil et
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
 
-        const rows = document.querySelectorAll("table tbody tr");
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2);
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        };
 
-        rows.forEach(row => {
-            const fisTarihiText = row.getAttribute('data-tarih'); // Aşağıda bunu ekleyeceğiz
-            if (!fisTarihiText) return;
+        document.getElementById("baslangic_tarih").value = formatDate(yesterday);
+        document.getElementById("bitis_tarih").value = formatDate(today);
 
-            const fisTarihi = new Date(fisTarihiText);
+        filtreleTablo(); // Artık DOM tamamen yüklendikten sonra çalışıyor
+    });
+function filtreleTablo() {
+    const baslangicInput = document.getElementById("baslangic_tarih").value;
+    const bitisInput = document.getElementById("bitis_tarih").value;
 
-            if ((isNaN(baslangic) || fisTarihi >= baslangic) &&
-                (isNaN(bitis) || fisTarihi <= bitis)) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
+    const baslangic = baslangicInput ? new Date(baslangicInput + "T00:00:00") : null;
+    const bitis = bitisInput ? new Date(bitisInput + "T23:59:59") : null;
+
+    const rows = document.querySelectorAll("table tbody tr");
+    let toplamGram = 0;
+
+    rows.forEach(row => {
+        const fisTarihiText = row.getAttribute('data-tarih');
+        if (!fisTarihiText) return;
+
+        const fisTarihi = new Date(fisTarihiText);
+
+        const goster =
+            (!baslangic || fisTarihi >= baslangic) &&
+            (!bitis || fisTarihi <= bitis);
+
+        row.style.display = goster ? "" : "none";
+
+        if (goster) {
+            const gramTd = row.querySelectorAll('td')[2]; // 3. kolon: Takoz Ağırlığı
+            if (gramTd) {
+                const gramText = gramTd.textContent
+                    .replace("gr", "")
+                    .trim()
+                    .replace(/,/g, ""); // <-- virgülleri temizle
+
+                const gram = parseFloat(gramText);
+                if (!isNaN(gram)) {
+                    toplamGram += gram;
+                }
             }
-        });
-    }
+        }
+    });
+
+    document.getElementById("toplam_gram").textContent = toplamGram.toLocaleString('tr-TR', {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3
+    }) + " gr";
+}
+
+
 
     function temizleFiltre() {
         document.getElementById("baslangic_tarih").value = "";
         document.getElementById("bitis_tarih").value = "";
-        filtreleTablo(); // tüm satırları geri getir
+        filtreleTablo();
     }
 </script>
+
 
 
 <script>
