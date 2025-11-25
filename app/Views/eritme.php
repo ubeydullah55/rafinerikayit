@@ -19,17 +19,7 @@
                 <div class="row">
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
-                            <h4>Rafineri Takoz Listesi</h4>
-                            <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
-                                Ayar Evi
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
-                                İfraz
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
-                                İşlenecek
-                            </button>
+                            <h4>REAKTÖR</h4>
                         </div>
                         <nav aria-label="breadcrumb" role="navigation">
                             <ol class="breadcrumb">
@@ -91,7 +81,7 @@
                             <?php foreach ($items as $item): ?>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * (( !empty($item['olculen_milyem']) && $item['olculen_milyem'] != 0 ) ? $item['olculen_milyem'] : $item['tahmini_milyem']) / 1000 ?>">
+                                        <input type="checkbox" class="select-row" value="<?= $item['id']; ?>" data-agirlik="<?= $item['islem_goren_miktar']; ?>" data-has="<?= $item['islem_goren_miktar'] * ((!empty($item['olculen_milyem']) && $item['olculen_milyem'] != 0) ? $item['olculen_milyem'] : $item['tahmini_milyem']) / 1000 ?>">
                                     </td>
 
                                     <td><?= esc($item['id']); ?></td>
@@ -169,6 +159,24 @@
                     </div>
 
                     <div id="uret_takoz_inputlari"></div>
+
+                    <div class="form-group">
+                        <label for="reaktor_fiziki">Reaktörde Kalan Miktar</label>
+                        <input type="number" min="1"  step="0.01" class="form-control" id="reaktor_fiziki" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="farkli_madde">Farklı Madde Gram(Yay vb.)</label>
+                                <input type="number" min="0" step="0.01" class="form-control" id="farkli_madde" required>
+                            </div>
+                            <div class="col-8">
+                                   <label for="farkli_madde_aciklama">Açıklama</label>
+                                <input type="text" class="form-control" id="farkli_madde_aciklama">
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Kaydet</button>
@@ -274,7 +282,9 @@
         const form = e.target;
         const ids = document.getElementById('uret_takoz_ids').value.split(',');
         const agirliklar = Array.from(form.querySelectorAll('input[name="agirlik[]"]')).map(i => i.value);
-
+        const reaktorFiziki = parseFloat(document.getElementById('reaktor_fiziki').value) || 0;
+        const farkli_madde = parseFloat(document.getElementById('farkli_madde').value) || 0;
+        const farkli_madde_aciklama = (document.getElementById('farkli_madde_aciklama').value || "").trim();
         const takozlar = agirliklar.map(a => ({
             agirlik: a
         }));
@@ -287,7 +297,10 @@
             },
             body: JSON.stringify({
                 ids: ids,
-                takozlar: takozlar
+                takozlar: takozlar,
+                reaktor_fiziki: reaktorFiziki,
+                farkli_madde,
+                farkli_madde_aciklama
             })
         }).then(res => res.json()).then(data => {
             if (data.success) {

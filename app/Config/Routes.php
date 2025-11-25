@@ -36,7 +36,10 @@ $routes->get('home/ayarevi', 'Home::ayarevi');
 $routes->post('takoz/cesniEkle', 'Home::cesniEkle');
 $routes->post('takoz/kaydet', 'AddGoldController::kaydet');
 
+
+
 $routes->post('takoz/kalancesniEkle', 'Home::kalancesniEkle');
+$routes->post('takoz/gumus', 'Home::gumus');
 
 $routes->get('home/eritme', 'Home::eritme');
 
@@ -55,5 +58,40 @@ $routes->post('cesni/incele', 'Home::inceleCesni');
 
 
 $routes->post('takoz/incele', 'Home::inceleTakoz');
+$routes->post('takoz/inceleKasa', 'Home::inceleTakozKasa');
 
 $routes->get('home/islenecek', 'Home::islenecek');
+
+
+$routes->post('home/islenmisTakozUret', 'Home::islenmisTakozUret');
+
+
+
+$routes->get('/stokTakipSecim', 'StokTakipController::index');
+$routes->get('/stokTakipSecim/getList/(:segment)', 'StokTakipController::getList/$1');
+
+
+$routes->get('cesniTakozView', 'CesniTakozController::cesniTakozView');
+
+$routes->post('cesniTakozView/cesniTakozOlustur', 'CesniTakozController::cesniTakozOlustur');
+
+$routes->get('reaktorTakozView', 'ReaktorTakozController::reaktorTakozView');
+
+$routes->post('reaktorTakozView/reaktorTakozOlustur', 'ReaktorTakozController::reaktorTakozOlustur');
+
+$routes->get('reaktorFireTakip', 'ReaktorFireTakipController::reaktorFireTakipView');
+
+$routes->get('reaktorFireTakip2', 'ReaktorFireTakipController::reaktorFireTakipView2');
+
+$routes->get('musteriIslem', 'MusteriIslemController::musteriView');
+$routes->post('musteriIslem/musteriBilgiGetir', 'MusteriIslemController::musteriBilgiGetir');
+
+$routes->get('home/hurdaListe', 'Home::hurdaEritme');
+
+
+$routes->get('cesniFireTakip', 'CesniFireController::cesniFireTakipView');
+
+$routes->get('islenmisFireTakip', 'IslenmisFireTakipController::islenmisFireTakipView');
+
+$routes->post('musteriIslem/onaylaTakoz', 'MusteriIslemController::onaylaTakoz');
+

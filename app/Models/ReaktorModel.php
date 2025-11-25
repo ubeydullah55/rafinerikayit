@@ -13,7 +13,7 @@ class ReaktorModel extends Model
     protected $returnType       = 'array';          // Dönüş tipi: 'array' veya 'object'
     protected $useSoftDeletes   = false;            // Soft delete kullanılmayacaksa false
 
-    protected $allowedFields    = ['fis_no', 'miktar']; // Kayıt eklerken/güncellerken kullanılabilir alanlar
+    protected $allowedFields    = ['fis_no', 'miktar','karisik_fire','farkli_madde','aciklama','created_date','created_user','reaktor_takoz_kodu']; // Kayıt eklerken/güncellerken kullanılabilir alanlar
 
     // Zaman damgaları (created_at, updated_at) kullanılıyor mu?
     protected $useTimestamps = false;

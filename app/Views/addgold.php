@@ -56,6 +56,7 @@
                             <select name="altin_turu" class="form-control">
                                 <option value="0">Hurda</option>
                                 <option value="1">Takoz</option>
+                                <option value="2">Ayar Bakma</option>
                             </select>
                         </div>
                     </div>

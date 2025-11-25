@@ -20,27 +20,7 @@
 					<div class="col-md-6 col-sm-12">
 						<div class="title">
 							<h4>MAL KABUL</h4>
-							<button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
-							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
-								Ayar Evi
-							</button>
-							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
-								İfraz
-							</button>
-							<button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
-								İşlenecek
-							</button>
 						</div>
-						<nav aria-label="breadcrumb" role="navigation">
-							<ol class="breadcrumb">
-								<li class="breadcrumb-item">
-									<a href="index.html">Anasayfa</a>
-								</li>
-								<li class="breadcrumb-item active" aria-current="page">
-									Liste
-								</li>
-							</ol>
-						</nav>
 					</div>
 
 				</div>
@@ -90,7 +70,17 @@
 									<td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
 									<td><?= esc($item['tahmini_milyem']); ?></td>
 									<td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
-									<td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
+									  <td style="text-align:center">
+                                        <?php if (!empty($item['musteri_notu'])): ?>
+                                            <span
+                                                style="cursor:pointer; color:#d9534f; font-size:18px;"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="<?= esc($item['musteri_notu']) ?>">&#9888;</span>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
 									<td>
 										<div class="dropdown">
 											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -163,7 +153,17 @@
 									<td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
 									<td><?= esc($item['tahmini_milyem']); ?></td>
 									<td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
-									<td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
+									  <td style="text-align:center">
+                                        <?php if (!empty($item['musteri_notu'])): ?>
+                                            <span
+                                                style="cursor:pointer; color:#d9534f; font-size:18px;"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="<?= esc($item['musteri_notu']) ?>">&#9888;</span>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
 									<td>
 										<div class="dropdown">
 											<a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -437,7 +437,7 @@
 
 
 <script>
-	function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu,islemYapan) {
+	function yazdirTakoz(id, musteri, girisGram, tahminiMilyem, musteriNotu, islemYapan) {
 		var printWindow = window.open('', '', 'width=300,height=600');
 
 		var icerik = `

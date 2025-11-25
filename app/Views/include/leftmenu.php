@@ -151,36 +151,13 @@
 	<div class="menu-block customscroll">
 		<div class="sidebar-menu">
 			<ul id="accordion-menu">
-				<!--
-			
-				<li>
-					<a href="<?= site_url('addcustomer') ?>" class="dropdown-toggle no-arrow">
-						<span class="micon bi bi-plus"></span><span class="mtext">Ekle</span>
-					</a>
-				</li>
-			
-			
-				<li>
-					<a href="<?= site_url('grafik') ?>" class="dropdown-toggle no-arrow">
-						<span class="micon bi bi-bar-chart"></span><span class="mtext">Grafik</span>
-					</a>
-				</li>
-				<li>
-					<a href="<?= site_url('silinenler') ?>" class="dropdown-toggle no-arrow">
-						<span class="micon bi bi-trash"></span><span class="mtext">Silinenler</span>
-					</a>
-				</li>
--->
-				<li>
-					<a href="<?= site_url('homepage') ?>" class="dropdown-toggle no-arrow">
-						<span class="micon bi bi-house"></span><span class="mtext">Anasayfa</span>
-					</a>
-				</li>
+
 				<li>
 					<a href="<?= site_url('addgold') ?>" class="dropdown-toggle no-arrow">
 						<span class="micon bi bi-plus"></span><span class="mtext">Külçe Ekle</span>
 					</a>
 				</li>
+
 				<?php if ($role == 1): ?>
 					<li>
 						<a href="<?= site_url('kasaHesap') ?>" class="dropdown-toggle no-arrow">
@@ -188,6 +165,139 @@
 						</a>
 					</li>
 				<?php endif; ?>
+
+				<?php if ($role == 1): ?>
+					<li>
+						<a href="<?= site_url('stokTakipSecim') ?>" class="dropdown-toggle no-arrow">
+							<span class="micon bi bi-boxes"></span><span class="mtext">Stok Takip</span>
+						</a>
+					</li>
+				<?php endif; ?>
+				<?php if ($role == 1): ?>
+					<li>
+						<a href="<?= site_url('musteriIslem') ?>" class="dropdown-toggle no-arrow">
+							<span class="micon bi bi-person"></span><span class="mtext">Müşteri İşlemleri</span>
+						</a>
+					</li>
+				<?php endif; ?>
+
+				<?php if ($role == 1): ?>
+					<li class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-gear"></span>
+							<span class="mtext">Rafineri İşlemleri</span>
+						</a>
+
+						<ul class="submenu">
+							<li>
+								<a href="<?= base_url('homepage'); ?>">
+									<span class="micon bi bi-house"></span>
+									Mal Kabul
+								</a>
+							</li>
+
+							<li>
+								<a href="<?= base_url('home/hurdaListe'); ?>">
+									<span class="micon bi bi-plus"></span>
+									Hurda Eritme
+								</a>
+							</li>
+
+							<li>
+								<a href="<?= base_url('home/ayarevi'); ?>">
+									<span class="micon bi bi-arrow-repeat"></span>
+									Ayar Evi
+								</a>
+							</li>
+
+							<li>
+								<a href="<?= base_url('home/eritme'); ?>">
+									<span class="micon bi bi-boxes"></span>
+									İfraz
+								</a>
+							</li>
+
+							<li>
+								<a href="<?= base_url('home/islenecek'); ?>">
+									<span class="micon bi bi-gear"></span>
+									İşlenecek
+								</a>
+							</li>
+						</ul>
+					</li>
+				<?php endif; ?>
+
+
+				<?php if ($role == 1): ?>
+					<li class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-arrow-repeat"></span>
+							<span class="mtext">Takoz Çevirme</span>
+						</a>
+
+						<ul class="submenu">
+							<li>
+								<a href="<?= site_url('cesniTakozView') ?>">
+									<span class="micon bi bi-arrow-repeat"></span>
+									Çeşni Takoz Yap
+								</a>
+							</li>
+
+							<li>
+								<a href="<?= site_url('reaktorTakozView') ?>">
+									<span class="micon bi bi-arrow-repeat"></span>
+									Reaktör Takoz Yap
+								</a>
+							</li>
+						</ul>
+					</li>
+				<?php endif; ?>
+
+
+
+
+
+
+
+
+				<?php if ($role == 1): ?>
+					<li class="dropdown">
+						<a href="javascript:;" class="dropdown-toggle">
+							<span class="micon bi bi-exclamation-triangle"></span>
+							<span class="mtext">Fire Takip</span>
+						</a>
+
+						<ul class="submenu">
+							<li>
+								<a href="<?= site_url('cesniFireTakip') ?>">
+									<span class="micon bi bi-boxes"></span>
+									Cesni Fire Takip
+								</a>
+							</li>
+							<li>
+								<a href="<?= site_url('islenmisFireTakip') ?>">
+									<span class="micon bi bi-boxes"></span>
+									İşlemnmiş Takoz Fire Takip
+								</a>
+							</li>
+							<li>
+								<a href="<?= site_url('reaktorFireTakip') ?>">
+									<span class="micon bi bi-boxes"></span>
+									Reaktör Fire Takip
+								</a>
+							</li>
+
+							<li>
+								<a href="<?= site_url('reaktorFireTakip2') ?>">
+									<span class="micon bi bi-box"></span>
+									Reaktör Fire Takip2
+								</a>
+							</li>
+						</ul>
+					</li>
+				<?php endif; ?>
+
+
 				<?php if ($role == 1): ?>
 					<li>
 						<a href="<?= site_url('addpersonel') ?>" class="dropdown-toggle no-arrow">
@@ -195,6 +305,7 @@
 						</a>
 					</li>
 				<?php endif; ?>
+
 
 			</ul>
 

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Models\CustomerModel;
 
 class AddGoldController extends BaseController
@@ -14,7 +15,7 @@ class AddGoldController extends BaseController
     }
     public function index()
     {
-         $customerModel = new CustomerModel();
+        $customerModel = new CustomerModel();
         $data['customers'] = $customerModel->findAll();
 
         return view('addgold', $data);
@@ -22,56 +23,62 @@ class AddGoldController extends BaseController
 
 
 
-public function kaydet()
-{
-    $request = service('request');
+    public function kaydet()
+    {
+        $request = service('request');
 
-    $altin_turu = $request->getPost('altin_turu'); // 0 = Hurda, 1 = Takoz
-$userAd = session()->get('name');
-    $data = [
-        'musteri' =>  $this->request->getPost('musteri_id'),
-        'giris_gram' => floatval($request->getPost('giris_agirlik')),
-        'tahmini_milyem' => floatval($request->getPost('tahmini_milyem')),
-        'musteri_notu' => $request->getPost('musteri_notu'),
-        'status_code' => 1, // Bekleme durumu
-        'created_user' => $userAd,
-        'created_date' => date('Y-m-d H:i:s'),
-    ];
+        $altin_turu = $request->getPost('altin_turu'); // 0 = Hurda, 1 = Takoz  2 = Hurda (özel tur 35)
+        $userAd = session()->get('name');
+        $data = [
+            'musteri' =>  $this->request->getPost('musteri_id'),
+            'giris_gram' => floatval($request->getPost('giris_agirlik')),
+            'tahmini_milyem' => floatval($request->getPost('tahmini_milyem')),
+            'musteri_notu' => $request->getPost('musteri_notu'),
+            'status_code' => 1, // Bekleme durumu
+            'created_user' => $userAd,
+            'created_date' => date('Y-m-d H:i:s'),
+        ];
 
-    // Modeli seç
-    if ($altin_turu == '0') {
-        $model = new \App\Models\HurdaModel(); // Hurda'ya ekle
-    } else {
-        $model = new \App\Models\TakozModel(); // Takoz'a ekle
+        // Modeli seç
+        if ($altin_turu == '0') {
+            // Hurda
+            $model = new \App\Models\HurdaModel();
+        } elseif ($altin_turu == '1') {
+            // Takoz
+            $model = new \App\Models\TakozModel();
+        } elseif ($altin_turu == '2') {
+            // Hurda ama TUR = 35 olacak
+            $model = new \App\Models\TakozModel();
+            $data['tur'] = 35; // EKLEDİĞİMİZ KISIM
+        }
+
+        if ($model->insert($data)) {
+            return redirect()->back()->with('success', 'Kayıt başarıyla eklendi.');
+        } else {
+            return redirect()->back()->with('error', 'Kayıt eklenirken hata oluştu.');
+        }
     }
-
-    if ($model->insert($data)) {
-        return redirect()->back()->with('success', 'Kayıt başarıyla eklendi.');
-    } else {
-        return redirect()->back()->with('error', 'Kayıt eklenirken hata oluştu.');
-    }
-}
 
 
 
     public function savecustomer()
     {
-        
+
         $model = new \App\Models\CustomerModel();
         $tc = $this->request->getPost('tc');
 
         // 1. Bu TC ile daha önce kayıt yapılmış mı kontrol et
-        if($tc !='11111111111'){
+        if ($tc != '11111111111') {
             $existingCustomer = $model->where('tc', $tc)
-                           ->where('status', 'A')
-                           ->first();
-    
+                ->where('status', 'A')
+                ->first();
+
             if ($existingCustomer) {
                 // 2. Eğer varsa yönlendir ve mesaj göster
                 return redirect()->to('/homepage')->with('error', 'Bu T.C. numarası ile kayıtlı bir müşteri zaten mevcut!');
             }
         }
-    
+
         $uploadedFileNameOnyuz = 'default.png'; // Başta default resim
         $uploadedFileNameArkayuz = 'default.png'; // Başta default resim
         $createdDate = date('Y-m-d H:i:s');
@@ -119,7 +126,7 @@ $userAd = session()->get('name');
             'ekleyen_id'                   => $userId,
         ];
 
-        
+
         $model->insert($data);
         return redirect()->to('/homepage')->with('success', 'Müşteri başarıyla eklendi.');
     }
@@ -153,17 +160,17 @@ $userAd = session()->get('name');
     {
         $customerModel = new \App\Models\CustomerModel();
         $userModel = new \App\Models\UserModel();
-    
+
         $customer = $customerModel->find($id);
-    
+
         if (!$customer) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Müşteri bulunamadı.');
         }
-    
+
         // Ekleyen kullanıcıyı bul
         $ekleyenUser = $userModel->find($customer['ekleyen_id']);
         $ekleyenName = $ekleyenUser ? $ekleyenUser['name'] : 'Bilinmiyor';
-    
+
         return view('viewcustomer', [
             'customer' => $customer,
             'ekleyenName' => $ekleyenName

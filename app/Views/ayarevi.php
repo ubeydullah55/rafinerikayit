@@ -20,16 +20,6 @@
                     <div class="col-md-6 col-sm-12">
                         <div class="title">
                             <h4>AYAR EVİ</h4>
-                            <button type="submit" class="btn btn-success" onclick="window.location.href='<?= base_url('homepage'); ?>'">Mal Kabul</button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/ayarevi'); ?>'">
-                                Ayar Evi
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/eritme'); ?>'">
-                                İfraz
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="window.location.href='<?= base_url('home/islenecek'); ?>'">
-                                İşlenecek
-                            </button>
                         </div>
                     </div>
 
@@ -101,7 +91,17 @@
                                     <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
-                                    <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
+                                      <td style="text-align:center">
+                                        <?php if (!empty($item['musteri_notu'])): ?>
+                                            <span
+                                                style="cursor:pointer; color:#d9534f; font-size:18px;"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="<?= esc($item['musteri_notu']) ?>">&#9888;</span>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <div class="dropdown">
                                             <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
@@ -115,6 +115,7 @@
                                                         <i class="dw dw-brightness1"></i> Çeşni Al
                                                     </a>
                                                 <?php endif; ?>
+
                                                 <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0): ?>
                                                     <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
                                                         <i class="dw dw-enter-1"></i> İlerlet
@@ -138,75 +139,6 @@
 
             </div>
 
-
-            <!--#region hurdalar  -->
-            <div class="card-box mb-30">
-                <div class="pd-20">
-                    <h4 class="text-blue h4">HURDALAR</h4>
-                </div>
-                <div class="pb-20">
-                    <table
-                        class="table hover multiple-select-row data-table-export nowrap">
-
-                        <thead>
-                            <tr>
-                                <th>Fiş No</th>
-                                <th class="table-plus datatable-nosort">Müşteri</th>
-                                <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
-                                <th class="table-plus datatable-nosort">Tahmini Milyem</th>
-                                <th class="table-plus datatable-nosort">Tahmini Has</th>
-                                <th class="table-plus datatable-nosort">Müşteri Notu</th>
-                                <th class="table-plus datatable-nosort">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            // Session'dan role değerini alalım
-                            $role = session()->get('role');
-                            ?>
-
-                            <?php foreach ($hurdalar as $item): ?>
-                                <tr>
-                                    <td><?= esc($item['id']); ?></td>
-                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
-                                    <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
-                                    <td><?= esc($item['tahmini_milyem']); ?></td>
-                                    <td><?= number_format($item['giris_gram'] * ($item['tahmini_milyem'] / 1000), 2); ?> gr</td>
-
-
-
-                                    <td><?= esc($item['musteri_notu']) ?: '-'; ?></td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                                                <i class="dw dw-more"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                                <a class="dropdown-item" href="#"><i class="dw dw-eye"></i> İncele</a>
-                                                <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
-
-                                                <a href="#" class="dropdown-item" onclick="openTakozYapModal(<?= $item['id']; ?>)">
-                                                    <i class="dw dw-brightness1"></i> Takoz Yap
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
-                                <td style="font-weight:bold;"><?= number_format($hurdatotalGram, 2); ?> gr</td>
-                                <td colspan="3"></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-            </div>
-
-            <!--#endregion -->
 
 
 
@@ -240,6 +172,96 @@
                             ?>
 
                             <?php foreach ($hastakozlar as $item): ?>
+                                <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
+                                    <td><?= esc($item['id']); ?></td>
+                                    <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
+                                    <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
+                                    <td><?= esc($item['tahmini_milyem']); ?></td>
+                                    <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
+                                    <td><?= esc($item['cesni_gram']); ?></td>
+                                    <td><?= esc($item['olculen_milyem']); ?></td>
+                                      <td style="text-align:center">
+                                        <?php if (!empty($item['musteri_notu'])): ?>
+                                            <span
+                                                style="cursor:pointer; color:#d9534f; font-size:18px;"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="<?= esc($item['musteri_notu']) ?>">&#9888;</span>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                                                <i class="dw dw-more"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                                <a href="#" class="dropdown-item" onclick="inceleTakoz(<?= $item['id'] ?>)">
+                                                    <i class="dw dw-eye"></i> İncele
+                                                </a>
+                                                <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
+                                                <?php if ($item['cesni_gram'] ==  0): ?>
+                                                    <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
+                                                        <i class="dw dw-brightness1"></i> Çeşni Al
+                                                    </a>
+                                                <?php endif; ?>
+                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0 && $item['olculen_milyem'] != 0): ?>
+                                                    <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+                                                        <i class="dw dw-enter-1"></i> İlerlet
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="1" style="font-weight:bold;">Toplam Gram:</td>
+                                <td style="font-weight:bold;"><?= number_format($totalHasTakozGram, 2); ?> gr</td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+            </div>
+
+
+
+
+
+               <div class="card-box mb-30">
+                <div class="pd-20">
+                    <h4 class="text-blue h4">İŞLENMİŞ TAKOZLAR</h4>
+                </div>
+                <div class="pb-20">
+                    <table
+                        class="table hover multiple-select-row data-table-export nowrap">
+
+                        <thead>
+                            <tr>
+                                <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Müşteri</th>
+                                <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
+                                <th class="table-plus datatable-nosort">Tahmini Milyem</th>
+
+                                <th class="table-plus datatable-nosort">İşlem Gören Miktar</th>
+                                <th class="table-plus datatable-nosort">Alınan Çeşni Ağırlığı</th>
+                                <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
+                                <th class="table-plus datatable-nosort">Müşteri Notu</th>
+                                <th class="table-plus datatable-nosort">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Session'dan role değerini alalım
+                            $role = session()->get('role');
+                            ?>
+
+                            <?php foreach ($islenmistakozlar as $item): ?>
                                 <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
                                     <td><?= esc($item['id']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
@@ -313,6 +335,7 @@
                                 <th class="table-plus datatable-nosort">Kalan Has Çeşni</th>
                                 <th class="table-plus datatable-nosort">Poşet Toplam Çeşni</th>
                                 <th class="table-plus datatable-nosort">Ölçülen Milyem</th>
+                                <th class="table-plus datatable-nosort">Gümüş Milyem</th>
 
                                 <th class="table-plus datatable-nosort">Action</th>
                             </tr>
@@ -324,15 +347,25 @@
                             ?>
 
                             <?php foreach ($cesnibilgi as $item): ?>
-                                <tr <?= ($item['cesni_has'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
+                                <?php
+                                $style = '';
+                                if ($item['olculen_milyem'] > 0) {
+                                    if (!is_null($item['gumus_milyem'])) {
+                                        $style = 'background-color: #e6ffed;'; // yeşilimsi
+                                    } else {
+                                        $style = 'background-color: #fff9e6;'; // açık sarı
+                                    }
+                                }
+                                ?>
+                                <tr style="<?= $style ?>">
                                     <td><?= esc($item['fis_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= esc($item['agirlik']); ?></td>
-                                  
+
                                     <td>
                                         <?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>
                                     </td>
-                                      <td>
+                                    <td>
                                         <?= ($item['kullanilan'] ?? 0); ?>
                                     </td>
                                     <td><?= esc($item['cesni_has']); ?></td>
@@ -340,6 +373,7 @@
                                         <?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>
                                     </td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
+                                    <td><?= esc($item['gumus_milyem']); ?></td>
 
                                     <td>
                                         <div class="dropdown">
@@ -360,6 +394,11 @@
                                                     </a>
                                                 <?php endif; ?>
                                                 <?php if ($item['cesni_has'] !=  0): ?>
+                                                    <a href="#" onclick="openGumusModal(<?= $item['fis_no']; ?>, '<?= $item['id']; ?>')" class="dropdown-item">
+                                                        <i class="dw dw-shield"></i> Gümüş gir
+                                                    </a>
+                                                <?php endif; ?>
+                                                <?php if ($item['cesni_has'] !=  0): ?>
                                                     <a href="#" onclick="ilerletCesni(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
                                                         <i class="dw dw-enter-1"></i> İlerlet
                                                     </a>
@@ -371,6 +410,7 @@
                                                         data-fis="<?= esc($item['fis_no']); ?>"
                                                         data-islem-gormeyen="<?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?>"
                                                         data-has="<?= esc($item['cesni_has']); ?>"
+                                                        data-gumus="<?= esc($item['gumus_milyem']); ?>"
                                                         data-total="<?= esc($item['cesni_has'] + ($item['agirlik'] - ($item['kullanilan'] ?? 0))); ?>"
                                                         data-musteri="<?= esc($item['musteri_adi']); ?>">
                                                         <i class="dw dw-print"></i> Yazdır
@@ -508,6 +548,36 @@
 </div>
 
 
+<!-- Gümüş Modal -->
+
+<div class="modal fade" id="gumusModal" tabindex="-1" role="dialog" aria-labelledby="gumusModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="gumusForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gumusModalLabel">Gümüş Miktarı Gir</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cesniId" name="id">
+                    <input type="hidden" id="tableId" name="tableid">
+                    <div class="form-group">
+                        <label for="cesniGram">Gümüş Milyem</label>
+                        <input type="number" step="0.0001" min="0" class="form-control" id="gumusMilyem" name="gumus_milyem" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <!-- Çeşni İncele Modal -->
 <div class="modal fade" id="cesniInceleModal" tabindex="-1" role="dialog" aria-labelledby="cesniInceleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
@@ -541,6 +611,12 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
 
 
 
@@ -603,6 +679,10 @@
         document.getElementById('tableId').value = tableId;
         document.getElementById('cesniGram').value = '';
         document.getElementById('kullanilancesniGram').value = '';
+
+        // 🧠 Modal açılmadan hemen önce id'leri logla
+        console.log("Açılan ID:", id);
+        console.log("Tablo ID:", tableId);
         $('#kalancesniModal').modal('show');
     }
 
@@ -649,6 +729,70 @@
             });
     });
 </script>
+
+
+
+
+<script>
+    function openGumusModal(id, tableId) {
+        document.getElementById('cesniId').value = id;
+        document.getElementById('tableId').value = tableId;
+        document.getElementById('gumusMilyem').value = '';
+        console.log("Açılan ID:", id);
+        console.log("Tablo ID:", tableId);
+        $('#gumusModal').modal('show');
+    }
+
+    // DOMContentLoaded ile form hazır olduğunda event ekle
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.getElementById('gumusForm');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('cesniId').value;
+            const tableId = document.getElementById('tableId').value;
+            const milyem = parseFloat(document.getElementById('gumusMilyem').value);
+
+            if (milyem < 0) {
+                alert("Geçerli bir gram değeri girin.");
+                return;
+            }
+
+            fetch('<?= base_url('takoz/gumus'); ?>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        tableid: tableId,
+                        gumus_milyem: milyem
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("AJAX response:", data); // 👈 buradan takip et
+                    if (data.success) {
+                        $('#gumusModal').modal('hide');
+                        Swal.fire("Başarılı", data.message, "success").then(() => location.reload());
+                    } else {
+                        Swal.fire("Hata", data.message, "error");
+                    }
+                })
+                .catch(err => {
+                    console.error('Hata:', err);
+                    Swal.fire("Hata", "Sunucu hatası.", "error");
+                });
+        });
+
+        // modal kapanırken focus kaldır (aria-hidden uyarısı önleme)
+        $('#gumusModal').on('hide.bs.modal', function() {
+            document.activeElement.blur();
+        });
+    });
+</script>
+
 
 
 
@@ -905,6 +1049,7 @@
                 const islemGormeyen = btn.dataset.islemGormeyen;
                 const has = btn.dataset.has;
                 const total = btn.dataset.total;
+                const gumus = btn.dataset.gumus;
                 const musteri = btn.dataset.musteri;
 
                 const printWindow = window.open('', '', 'width=300,height=600');
@@ -953,6 +1098,7 @@
                         <p><strong>İşlem Görmeyen:</strong> ${islemGormeyen} gr</p>
                         <p><strong>Has:</strong> ${has} gr</p>
                         <p><strong>Toplam:</strong> ${total} gr</p>
+                        <p><strong>Gümüş:</strong> ${gumus} gr</p>
                         <p><strong>Tarih:</strong> ${new Date().toLocaleString()}</p>
                     </div>
                     <script>
