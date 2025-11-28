@@ -58,7 +58,7 @@
 
                         <thead>
                             <tr>
-                                <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Tahmini Milyem</th>
@@ -77,8 +77,18 @@
                             ?>
 
                             <?php foreach ($items as $item): ?>
-                                <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
-                                    <td><?= esc($item['id']); ?></td>
+                                <tr
+                                    <?php
+                                    // pembe ton (tur = 35)
+                                    if (!empty($item['tur']) && $item['tur'] == 35) {
+                                        echo 'style="background-color: #ffe6f2;"'; // hafif pembe
+                                    }
+                                    // yeşil ton (cesni_gram > 0)
+                                    else if ($item['cesni_gram'] > 0) {
+                                        echo 'style="background-color: #e6ffed;"';
+                                    }
+                                    ?>>
+                                    <td><?= esc($item['seri_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
@@ -91,7 +101,7 @@
                                     <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
-                                      <td style="text-align:center">
+                                    <td style="text-align:center">
                                         <?php if (!empty($item['musteri_notu'])): ?>
                                             <span
                                                 style="cursor:pointer; color:#d9534f; font-size:18px;"
@@ -110,16 +120,26 @@
                                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
                                                 <a class="dropdown-item" href="#"><i class="dw dw-eye"></i> İncele</a>
                                                 <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
-                                                <?php if ($item['cesni_gram'] ==  0): ?>
-                                                    <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
-                                                        <i class="dw dw-brightness1"></i> Çeşni Al
+                                                <?php if (empty($item['seri_no'])): ?>
+                                                    <a href="#" class="dropdown-item" onclick="seriNoGir(<?= $item['id']; ?>)">
+                                                        <i class="dw dw-brightness1"></i> Takoz No Gir
                                                     </a>
                                                 <?php endif; ?>
+                                                <?php if (!empty($item['seri_no'])): ?>
 
-                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0): ?>
-                                                    <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
-                                                        <i class="dw dw-enter-1"></i> İlerlet
-                                                    </a>
+                                                    <?php if ($item['cesni_gram'] == 0): ?>
+                                                        <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
+                                                            <i class="dw dw-brightness1"></i> Çeşni Al
+                                                        </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0 && $item['tur'] != 35): ?>
+                                                        <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+                                                            <i class="dw dw-enter-1"></i> İlerlet
+                                                        </a>
+                                                    <?php endif; ?>
+
+
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -153,7 +173,7 @@
 
                         <thead>
                             <tr>
-                                <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Tahmini Milyem</th>
@@ -173,14 +193,14 @@
 
                             <?php foreach ($hastakozlar as $item): ?>
                                 <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
-                                    <td><?= esc($item['id']); ?></td>
+                                    <td><?= esc($item['seri_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
                                     <td><?= number_format(esc($item['islem_goren_miktar']), 2); ?></td>
                                     <td><?= esc($item['cesni_gram']); ?></td>
                                     <td><?= esc($item['olculen_milyem']); ?></td>
-                                      <td style="text-align:center">
+                                    <td style="text-align:center">
                                         <?php if (!empty($item['musteri_notu'])): ?>
                                             <span
                                                 style="cursor:pointer; color:#d9534f; font-size:18px;"
@@ -201,15 +221,23 @@
                                                     <i class="dw dw-eye"></i> İncele
                                                 </a>
                                                 <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
-                                                <?php if ($item['cesni_gram'] ==  0): ?>
-                                                    <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
-                                                        <i class="dw dw-brightness1"></i> Çeşni Al
+                                                <?php if (empty($item['seri_no'])): ?>
+                                                    <a href="#" class="dropdown-item" onclick="seriNoGir(<?= $item['id']; ?>)">
+                                                        <i class="dw dw-brightness1"></i> Takoz No Gir
                                                     </a>
                                                 <?php endif; ?>
-                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0 && $item['olculen_milyem'] != 0): ?>
-                                                    <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
-                                                        <i class="dw dw-enter-1"></i> İlerlet
-                                                    </a>
+                                                <?php if (!empty($item['seri_no'])): ?>
+
+                                                    <?php if ($item['cesni_gram'] ==  0): ?>
+                                                        <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
+                                                            <i class="dw dw-brightness1"></i> Çeşni Al
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0 && $item['olculen_milyem'] != 0): ?>
+                                                        <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
+                                                            <i class="dw dw-enter-1"></i> İlerlet
+                                                        </a>
+                                                    <?php endif; ?>
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -233,7 +261,7 @@
 
 
 
-               <div class="card-box mb-30">
+            <div class="card-box mb-30">
                 <div class="pd-20">
                     <h4 class="text-blue h4">İŞLENMİŞ TAKOZLAR</h4>
                 </div>
@@ -243,7 +271,7 @@
 
                         <thead>
                             <tr>
-                                <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">Tahmini Milyem</th>
@@ -263,7 +291,7 @@
 
                             <?php foreach ($islenmistakozlar as $item): ?>
                                 <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
-                                    <td><?= esc($item['id']); ?></td>
+                                    <td><?= esc($item['seri_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                     <td><?= esc($item['tahmini_milyem']); ?></td>
@@ -281,15 +309,19 @@
                                                     <i class="dw dw-eye"></i> İncele
                                                 </a>
                                                 <a class="dropdown-item" href="#"><i class="dw dw-edit2"></i> Düzenle</a>
-                                                <?php if ($item['cesni_gram'] ==  0): ?>
-                                                    <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
-                                                        <i class="dw dw-brightness1"></i> Çeşni Al
+                                                <?php if (empty($item['seri_no'])): ?>
+                                                    <a href="#" class="dropdown-item" onclick="seriNoGir(<?= $item['id']; ?>)">
+                                                        <i class="dw dw-brightness1"></i> Takoz No Gir
                                                     </a>
                                                 <?php endif; ?>
-                                                <?php if (!empty($item['cesni_gram']) && $item['cesni_gram'] != 0 && $item['olculen_milyem'] != 0): ?>
-                                                    <a href="#" onclick="ilerletTakoz(<?= $item['id']; ?>, '<?= $item['musteri']; ?>')" class="dropdown-item">
-                                                        <i class="dw dw-enter-1"></i> İlerlet
-                                                    </a>
+                                                <?php if (!empty($item['seri_no'])): ?>
+
+                                                    <?php if ($item['cesni_gram'] ==  0): ?>
+                                                        <a href="#" class="dropdown-item" onclick="openCesniModal(<?= $item['id']; ?>)">
+                                                            <i class="dw dw-brightness1"></i> Çeşni Al
+                                                        </a>
+                                                    <?php endif; ?>
+                                                 
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -327,7 +359,7 @@
 
                         <thead>
                             <tr>
-                                <th>Fiş No</th>
+                                <th class="table-plus datatable-nosort">Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Alınan Toplam Çeşni Ağırlığı</th>
                                 <th class="table-plus datatable-nosort">İşlem Görmeyen</th>
@@ -349,7 +381,15 @@
                             <?php foreach ($cesnibilgi as $item): ?>
                                 <?php
                                 $style = '';
-                                if ($item['olculen_milyem'] > 0) {
+
+                                // 1) tur = 35 ise HER ZAMAN PEMBE
+                                if (!empty($item['tur']) && $item['tur'] == 35) {
+                                    $style = 'background-color: #ffe6f2;'; // pembe ton
+                                }
+
+                                // 2) tur 35 değilse mevcut şartlar çalışsın
+                                else if ($item['olculen_milyem'] > 0) {
+
                                     if (!is_null($item['gumus_milyem'])) {
                                         $style = 'background-color: #e6ffed;'; // yeşilimsi
                                     } else {
@@ -358,7 +398,7 @@
                                 }
                                 ?>
                                 <tr style="<?= $style ?>">
-                                    <td><?= esc($item['fis_no']); ?></td>
+                                    <td><?= esc($item['seri_no']); ?></td>
                                     <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                     <td><?= esc($item['agirlik']); ?></td>
 
@@ -612,7 +652,60 @@
     </div>
 </div>
 
+<div class="modal fade" id="seriNoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
 
+            <div class="modal-header">
+                <h5 class="modal-title">Takoz No Gir</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="seri_item_id">
+
+                <label>Seri No:</label>
+                <input type="text" id="seri_no_input" class="form-control">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                <button class="btn btn-primary" onclick="seriNoKaydet()">Kaydet</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function seriNoGir(id) {
+        document.getElementById("seri_item_id").value = id;
+        document.getElementById("seri_no_input").value = "";
+        $("#seriNoModal").modal("show");
+    }
+
+    function seriNoKaydet() {
+        let id = document.getElementById("seri_item_id").value;
+        let seri_no = document.getElementById("seri_no_input").value.trim();
+
+        if (seri_no === "") {
+            alert("Seri no boş olamaz");
+            return;
+        }
+
+        $.post("<?= site_url('home/seriNoKaydet') ?>", {
+            id: id,
+            seri_no: seri_no
+        }, function(response) {
+            if (response.status === "error") {
+                alert(response.message);
+            } else {
+                location.reload();
+            }
+        }, "json");
+    }
+</script>
 
 
 

@@ -9,7 +9,7 @@ class CesniModel extends Model
     protected $table            = 'cesni';        // Tablonun adı
     protected $primaryKey       = 'id';           // Anahtar sütun
 
-    protected $allowedFields    = ['fis_no','agirlik','status_code','kullanilan','cesni_takoz_kodu'];    // Formdan gelebilecek alanlar
+    protected $allowedFields    = ['fis_no','agirlik','status_code','kullanilan','cesni_takoz_kodu','creadet_date','creadet_user'];    // Formdan gelebilecek alanlar
 
     protected $returnType       = 'array';        // Dilersen 'object' de yapabilirsin
 

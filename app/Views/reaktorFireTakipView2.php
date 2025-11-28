@@ -53,7 +53,7 @@
 
                         <thead>
                             <tr>
-
+                       
                                 <th>Fiş No</th>
                                 <th class="table-plus datatable-nosort">Müşteri</th>
                                 <th class="table-plus datatable-nosort">Takoz Ağırlığı</th>
@@ -137,7 +137,7 @@
                                                                     ? esc(date('Y-m-d', strtotime($rf['created_date'])))
                                                                     : esc(date('Y-m-d', strtotime($item['created_date'])))
                                                                 ?>">
-                                                    <td><?= esc($item['id']); ?></td>
+                                                     <td><?= esc($item['seri_no']); ?></td>
                                                     <td><?= esc($item['musteri_adi']); ?></td>
                                                     <td style="text-align:center"><?= number_format($item['giris_gram'], 2); ?> gr</td>
                                                     <td style="text-align:center"><?= esc($item['tahmini_milyem']); ?></td>

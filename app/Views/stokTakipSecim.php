@@ -8,9 +8,9 @@
         <select id="stokSecim" class="form-control w-50">
             <option value="">-- Seçiniz --</option>
             <option value="mal_kabul">Mal Kabul</option>
-            <option value="ifraz">İfraz</option>
-            <option value="ayar_evi">Ayar Evi</option>
-            <option value="reaktor">Reaktör</option>
+            <option value="ifraz">Rafineri</option>
+            <option value="ayar_evi">Çeşni</option>
+            <option value="reaktor">Reaktörden Artan</option>
         </select>
     </div>
 
@@ -83,7 +83,7 @@
     <div id="ifraz" class="stok-tablosu" style="display:none;">
         <div class="card-box mb-30">
             <div class="pd-20">
-                <h4 class="text-blue h4">İFRAZ</h4>
+                <h4 class="text-blue h4">RAFİNERİ STOKLARI</h4>
             </div>
             <div class="pb-20">
                 <table
@@ -110,8 +110,23 @@
                         ?>
 
                         <?php foreach ($ifrazTakoz as $item): ?>
-                            <tr <?= ($item['cesni_gram'] > 0) ? 'style="background-color: #e6ffed;"' : ''; ?>>
-                                <td><?= esc($item['id']); ?></td>
+                            <tr
+                                <?php
+                                $style = '';
+
+                                // cesni_gram > 0 ise yeşilimsi
+                                if (!empty($item['cesni_gram']) && $item['cesni_gram'] > 0) {
+                                    $style .= 'background-color: #e6ffed;';
+                                }
+
+                                // tur=35 ise pembe (baskın olsun diye sonradan yazdık)
+                                if (!empty($item['tur']) && $item['tur'] == 35) {
+                                    $style .= 'background-color: #ffe6f2;';
+                                }
+
+                                echo !empty($style) ? 'style="' . $style . '"' : '';
+                                ?>>
+                                <td><?= esc($item['seri_no']); ?></td>
                                 <td class="table-plus"><?= esc($item['musteri_adi']); ?></td>
                                 <td><?= number_format(esc($item['giris_gram']), 2); ?> gr</td>
                                 <td><?= esc($item['tahmini_milyem']); ?></td>
@@ -172,7 +187,7 @@
     <div id="ayar_evi" class="stok-tablosu" style="display:none;">
         <div class="card-box mb-30">
             <div class="pd-20">
-                <h4 class="text-blue h4">Çeşniler</h4>
+                <h4 class="text-blue h4">ÇEŞNİ STOKLARI</h4>
             </div>
             <div class="pb-20">
                 <table class="table hover multiple-select-row data-table-export nowrap" id="cesniTable">
@@ -199,7 +214,7 @@
                             }
                             ?>
                             <tr style="<?= $style ?>">
-                                <td><?= esc($item['fis_no']); ?></td>
+                                <td><?= esc($item['seri_no']); ?></td>
                                 <td><?= esc($item['musteri_adi']); ?></td>
                                 <td><?= esc($item['agirlik']); ?></td>
                                 <td><?= esc($item['agirlik'] - ($item['kullanilan'] ?? 0)); ?></td>
@@ -291,6 +306,7 @@
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
+                                                    <th>Fiş No</th>
                                                     <th>Müşteri</th>
                                                     <th>Giriş Gram</th>
                                                     <th>Tahmini Milyem</th>
@@ -303,6 +319,7 @@
                                             <tbody>
                                                 <?php foreach ($row['takozlar'] as $t): ?>
                                                     <tr>
+                                                        <td><?= $t['seri_no'] ?></td>
                                                         <td><?= $t['musteri_adi'] ?></td>
                                                         <td><?= $t['giris_gram'] ?></td>
                                                         <td><?= $t['tahmini_milyem'] ?></td>

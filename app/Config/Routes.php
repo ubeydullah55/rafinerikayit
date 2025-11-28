@@ -94,4 +94,11 @@ $routes->get('cesniFireTakip', 'CesniFireController::cesniFireTakipView');
 $routes->get('islenmisFireTakip', 'IslenmisFireTakipController::islenmisFireTakipView');
 
 $routes->post('musteriIslem/onaylaTakoz', 'MusteriIslemController::onaylaTakoz');
+$routes->post('home/seriNoKaydet', 'Home::seriNoKaydet');
+
+$routes->get('ayarBakma', 'Home::ayarBakmaView');
+$routes->post('ayarBakma/onaylaTakoz', 'Home::ayarBakmaonaylaTakoz');
+$routes->get('ayarBakmaCesni', 'Home::ayarBakmaCesniView');
+$routes->post('ayarBakma/onaylaCesni', 'Home::ayarBakmaonaylaCesni');
+$routes->post('ayarBakma/geriCesni', 'Home::ayarBakmageriCesni');
 

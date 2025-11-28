@@ -56,17 +56,19 @@
                             <?php foreach ($cesnibilgi as $item): ?>
                                 <?php
                                 $style = '';
-                                if ($item['olculen_milyem'] > 0) {
+                                if (!empty($item['tur']) && $item['tur'] == 35) {
+                                    $style = 'background-color: #ffe6f2;'; // pembe ton
+                                } elseif ($item['olculen_milyem'] > 0) {
                                     $style = !is_null($item['gumus_milyem']) ? 'background-color:#e6ffed;' : 'background-color:#fff9e6;';
                                 }
                                 // Checkbox durumu: ölçülen milyem yoksa veya gümüş milyem null ise disable yap
-                                $disabled = ($item['olculen_milyem'] <= 0 || is_null($item['gumus_milyem'])) ? 'disabled' : '';
+                                $disabled = ($item['olculen_milyem'] <= 0 || is_null($item['gumus_milyem']) || $item['status_code'] == 2) ? 'disabled' : '';
                                 ?>
                                 <tr style="<?= $style ?>">
                                     <td>
                                         <input type="checkbox" class="selectCesni" value="<?= $item['id'] ?>" <?= $disabled ?>>
                                     </td>
-                                    <td><?= esc($item['fis_no']); ?></td>
+                                    <td><?= esc($item['seri_no']); ?></td>
                                     <td><?= esc($item['musteri_adi']); ?></td>
 
                                     <td><?= esc($item['agirlik']); ?></td>

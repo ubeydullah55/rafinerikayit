@@ -169,7 +169,7 @@
 				<?php if ($role == 1): ?>
 					<li>
 						<a href="<?= site_url('stokTakipSecim') ?>" class="dropdown-toggle no-arrow">
-							<span class="micon bi bi-boxes"></span><span class="mtext">Stok Takip</span>
+							<span class="micon bi bi-clipboard-data"></span><span class="mtext">Stok Takip</span>
 						</a>
 					</li>
 				<?php endif; ?>
@@ -177,6 +177,13 @@
 					<li>
 						<a href="<?= site_url('musteriIslem') ?>" class="dropdown-toggle no-arrow">
 							<span class="micon bi bi-person"></span><span class="mtext">Müşteri İşlemleri</span>
+						</a>
+					</li>
+				<?php endif; ?>
+					<?php if ($role == 1): ?>
+					<li>
+						<a href="<?= site_url('ayarBakma') ?>" class="dropdown-toggle no-arrow">
+							<span class="micon bi bi-lock"></span><span class="mtext">Ayar Bakma</span>
 						</a>
 					</li>
 				<?php endif; ?>

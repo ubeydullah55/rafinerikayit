@@ -30,10 +30,10 @@ class CesniTakozController extends BaseController
 
         // CESNİLER: status_code=1 olanlar + takozlar + customer join
         $cesniBuilder = $db->table('cesni');
-        $cesniBuilder->select('cesni.*, takozlar.musteri,takozlar.gumus_milyem, takozlar.giris_gram, takozlar.tahmini_milyem, takozlar.olculen_milyem, takozlar.cesni_has, customer.ad as musteri_adi');
+        $cesniBuilder->select('cesni.*, takozlar.musteri,takozlar.gumus_milyem, takozlar.seri_no, takozlar.giris_gram, takozlar.tahmini_milyem, takozlar.olculen_milyem, takozlar.cesni_has,takozlar.tur, customer.ad as musteri_adi');
         $cesniBuilder->join('takozlar', 'cesni.fis_no = takozlar.id');
         $cesniBuilder->join('customer', 'customer.id = takozlar.musteri', 'left');
-        $cesniBuilder->where('cesni.status_code', 1);
+        $cesniBuilder->whereIn('cesni.status_code', [1, 2]);
         $cesnibilgi = $cesniBuilder->get()->getResultArray();
 
 

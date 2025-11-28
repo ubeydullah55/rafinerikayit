@@ -86,6 +86,7 @@
                                             <table class="table table-bordered">
                                                 <thead>
                                                     <tr>
+                                                        <th>Fiş No</th>
                                                         <th>Müşteri</th>
                                                         <th>Giriş Gram</th>
                                                         <th>Tahmini Milyem</th>
@@ -98,6 +99,7 @@
                                                 <tbody>
                                                     <?php foreach ($row['takozlar'] as $t): ?>
                                                         <tr>
+                                                            <td><?= $t['seri_no']  ?></td>
                                                             <td><?= $t['musteri_adi']  ?></td>
                                                             <td><?= $t['giris_gram'] ?></td>
                                                             <td><?= $t['tahmini_milyem'] ?></td>

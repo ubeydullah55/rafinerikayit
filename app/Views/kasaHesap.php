@@ -105,7 +105,7 @@
                                     data-tarih="<?= esc(date('Y-m-d', strtotime($item['created_date']))) ?>"
                                     class="<?= $pasif ? 'text-muted bg-light' : '' ?>"
                                     style="<?= $pasif ? 'opacity:0.6; pointer-events:none;' : '' ?> <?= $rowBg ?>">
-                                    <td><?= esc($item['id']); ?></td>
+                                    <td><?= esc($item['seri_no']); ?></td>
                                     <td><?= esc($item['musteri_adi']); ?></td>
                                     <td style="text-align:center"><?= number_format($item['giris_gram'], 2); ?> gr</td>
                                     <td style="text-align:center"><?= esc($item['tahmini_milyem']); ?></td>

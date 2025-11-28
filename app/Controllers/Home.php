@@ -78,10 +78,11 @@ class Home extends BaseController
 
         // CESNİLER: status_code=1 olanlar + takozlar + customer join
         $cesniBuilder = $db->table('cesni');
-        $cesniBuilder->select('cesni.*, takozlar.musteri,takozlar.gumus_milyem, takozlar.giris_gram, takozlar.tahmini_milyem, takozlar.olculen_milyem, takozlar.cesni_has, customer.ad as musteri_adi');
+        $cesniBuilder->select('cesni.*,takozlar.seri_no, takozlar.musteri,takozlar.gumus_milyem, takozlar.giris_gram, takozlar.tahmini_milyem, takozlar.olculen_milyem, takozlar.cesni_has,takozlar.tur, customer.ad as musteri_adi');
         $cesniBuilder->join('takozlar', 'cesni.fis_no = takozlar.id');
         $cesniBuilder->join('customer', 'customer.id = takozlar.musteri', 'left');
-        $cesniBuilder->where('cesni.status_code', 1);
+        $cesniBuilder->whereIn('cesni.status_code', [1, 2]);
+        $cesniBuilder->orderBy('cesni.id', 'DESC');
         $cesnibilgi = $cesniBuilder->get()->getResultArray();
 
         // Toplam gramaj hesaplama (takozlar)
@@ -218,7 +219,7 @@ class Home extends BaseController
 
             $id = $input['id']; // bu takoz tablosundaki ID
             $eklenecekCesni = floatval($input['cesni_gram']);
-
+            $userAd = session()->get('name');
             $model = new \App\Models\TakozModel();
             $record = $model->find($id);
 
@@ -237,11 +238,14 @@ class Home extends BaseController
             ]);
 
             // Cesni tablosuna yeni kayıt ekleyelim
+            $statusCode = ($record['tur'] == 35) ? 2 : 1;
             $cesniModel = new \App\Models\CesniModel();
             $insertSuccess = $cesniModel->insert([
                 'fis_no' => $id, // takoz tablosundaki ID ile eşleşir
                 'agirlik' => $eklenecekCesni,
-                'status_code' => 1 // aktif olarak işaretliyoruz
+                'status_code' => $statusCode, // aktif olarak işaretliyoruz
+                'creadet_date' => date('Y-m-d H:i:s'), // şimdiki zaman
+                'creadet_user' => $userAd
             ]);
 
             return $this->response->setJSON([
@@ -1233,5 +1237,154 @@ class Home extends BaseController
             'hurdalar' => $hurdalar,
             'hurdatotalGram' => array_sum(array_column($hurdalar, 'giris_gram'))
         ]);
+    }
+
+
+
+    public function seriNoKaydet()
+    {
+        $id = $this->request->getPost('id');
+        $seri_no = trim($this->request->getPost('seri_no'));
+
+        if (empty($seri_no)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Seri numarası boş olamaz'
+            ]);
+        }
+
+        $takozModel = new \App\Models\TakozModel();
+
+        // Zaten bu seri numarası var mı?
+        $varMi = $takozModel->where('seri_no', $seri_no)->first();
+
+        if ($varMi) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Bu seri numarası zaten mevcut!'
+            ]);
+        }
+
+        // Güncelle
+        $takozModel->update($id, [
+            'seri_no' => $seri_no
+        ]);
+
+        return $this->response->setJSON([
+            'status' => 'success',
+            'message' => 'Seri numarası kaydedildi'
+        ]);
+    }
+
+
+    public function ayarBakmaView()
+    {
+        $db = \Config\Database::connect();
+
+        // Takozlar: status_code=4, hurda_grup_kodu <=0, tur=0, müşteri adı ile birlikte
+        $builder = $db->table('takozlar');
+        $builder->select('takozlar.*, customer.ad as musteri_adi,customer.oran');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $builder->whereIn('takozlar.status_code', [1, 2, 3, 4, 8]);
+        //$builder->where('takozlar.hurda_grup_kodu <=', 0);
+        //$builder->where('takozlar.tur', 0);
+        $builder->whereIn('takozlar.tur', [35]);
+        $builder->orderBy('takozlar.id', 'DESC');
+        $items = $builder->get()->getResultArray();
+
+
+
+
+
+        return view('ayarBakma', [
+            'items' => $items,
+            'role' => session()->get('role'),
+        ]);
+    }
+
+
+    public function ayarBakmaonaylaTakoz()
+    {
+        $takoz_id = $this->request->getPost('takoz_id');
+
+        if (!$takoz_id) {
+            return $this->response->setJSON(['status' => 'error']);
+        }
+
+        $db = \Config\Database::connect();
+
+        $db->table('takozlar')
+            ->where('id', $takoz_id)
+            ->update(['status_code' => 8]);
+
+        return $this->response->setJSON(['status' => 'success']);
+    }
+
+    public function ayarBakmaCesniView()
+    {
+        $db = \Config\Database::connect();
+
+        // Takozlar + Cesni + Customer
+        $builder = $db->table('takozlar');
+        $builder->select('
+    takozlar.*, 
+    customer.ad as musteri_adi,
+    customer.oran,
+    cesni.id as cesni_id,
+    cesni.fis_no as cesni_fis_no,
+    cesni.agirlik as agirlik,
+    cesni.status_code as cesni_status_code,
+    cesni.kullanilan as kullanilan,
+    cesni.cesni_takoz_kodu,
+    cesni.creadet_date,
+    cesni.creadet_user
+');
+        $builder->join('customer', 'customer.id = takozlar.musteri', 'left');
+        $builder->join('cesni', 'cesni.fis_no = takozlar.id', 'left'); // Cesni ile birleştir
+        $builder->whereIn('takozlar.status_code', [1, 2, 3, 4, 8]); // takoz status_code filtre
+        $builder->whereIn('takozlar.tur', [35]); // tur filtre
+        $builder->orderBy('takozlar.id', 'DESC');
+
+        $items = $builder->get()->getResultArray();
+
+        return view('ayarBakmaCesni', [
+            'items' => $items,
+            'role' => session()->get('role'),
+        ]);
+    }
+
+
+    public function ayarBakmaonaylaCesni()
+    {
+        $cesni_id = $this->request->getPost('cesni_id');
+
+        if (!$cesni_id) {
+            return $this->response->setJSON(['status' => 'error']);
+        }
+
+        $db = \Config\Database::connect();
+
+        $db->table('cesni')
+            ->where('id', $cesni_id)
+            ->update(['status_code' => 3]);
+
+        return $this->response->setJSON(['status' => 'success']);
+    }
+
+        public function ayarBakmageriCesni()
+    {
+        $cesni_id = $this->request->getPost('cesni_id');
+
+        if (!$cesni_id) {
+            return $this->response->setJSON(['status' => 'error']);
+        }
+
+        $db = \Config\Database::connect();
+
+        $db->table('cesni')
+            ->where('id', $cesni_id)
+            ->update(['status_code' => 1]);
+
+        return $this->response->setJSON(['status' => 'success']);
     }
 }
